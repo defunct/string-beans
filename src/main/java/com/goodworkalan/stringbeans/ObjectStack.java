@@ -30,10 +30,10 @@ public class ObjectStack {
             metaObject = new MetaMap(new ReflectiveFactory(), (ParameterizedType) Dictionary.class.getGenericSuperclass());
         } else {
             if (!stringer.isSubClass(objectClass)) {
-                throw new StringBeanException(0);
+                throw new StringBeanException(ObjectStack.class, "pushIsNotSubClass");
             }
             if (!propertyClass.isAssignableFrom(objectClass)) {
-                throw new StringBeanException(0);
+                throw new StringBeanException(ObjectStack.class, "pushIsNotAssignableFrom");
             }
             metaObject = MetaObjects.getInstance(stringer, objectClass);
         }
@@ -75,7 +75,7 @@ public class ObjectStack {
         try {
             return Class.forName(className);
         } catch (ClassNotFoundException e) {
-            throw new StringBeanException(0, e);
+            throw new StringBeanException(ObjectStack.class, "forName", e);
         }
     }
 
@@ -90,10 +90,10 @@ public class ObjectStack {
             if (object instanceof Dictionary) {
                 Dictionary dictionary = (Dictionary) object;
                 if (!stringer.isSubClass(objectClass)) {
-                    throw new StringBeanException(0);
+                    throw new StringBeanException(ObjectStack.class, "popIsNotSubClass");
                 }
                 if (!metaObject.getObjectClass().isAssignableFrom(objectClass)) {
-                    throw new StringBeanException(0);
+                    throw new StringBeanException(ObjectStack.class, "popIsNotAssignableFrom");
                 } 
                 createContainer(nameStack.getLast(), MetaObjects.getInstance(stringer, objectClass));
                 metaObject = objectInfoStack.getLast();

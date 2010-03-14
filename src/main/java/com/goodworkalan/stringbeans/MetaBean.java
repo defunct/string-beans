@@ -34,7 +34,7 @@ public class MetaBean implements MetaObject {
         try {
             beanInfo = Introspector.getBeanInfo(object, Object.class);
         } catch (IntrospectionException e) {
-            throw new StringBeanException(0, e);
+            throw new StringBeanException(MetaBean.class, "getBeanInfo", e);
         }
         for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
             java.lang.reflect.Method reader = property.getReadMethod();
@@ -54,7 +54,7 @@ public class MetaBean implements MetaObject {
         try {
             this.constructor = new ReflectiveFactory().getConstructor(object);
         } catch (ReflectiveException e) {
-            throw new StringBeanException(0, e);
+            throw new StringBeanException(MetaBean.class, "getConstructor", e);
         }
         this.type = object;
         this.objectClass = object;
@@ -64,7 +64,7 @@ public class MetaBean implements MetaObject {
         try {
             return constructor.newInstance();
         } catch (ReflectiveException e) {
-            throw new StringBeanException(0, e);
+            throw new StringBeanException(MetaBean.class, "newInstance", e);
         }
     }
 
@@ -95,7 +95,7 @@ public class MetaBean implements MetaObject {
                             }
                             return new ObjectBucket(field.getNative().getType(),name, field.get(object));
                         } catch (ReflectiveException e) {
-                            throw new StringBeanException(0, e);
+                            throw new StringBeanException(MetaBean.class, "nextBucket", e);
                         }
                     }
 
@@ -138,7 +138,7 @@ public class MetaBean implements MetaObject {
                 field.set(object, value);
             }
         } catch (ReflectiveException e) {
-            throw new StringBeanException(0, e);
+            throw new StringBeanException(MetaBean.class, "fieldSet", e);
         }
     }
 
@@ -150,7 +150,7 @@ public class MetaBean implements MetaObject {
             }
             return field.get(object);
         } catch (ReflectiveException e) {
-            throw new StringBeanException(0, e);
+            throw new StringBeanException(MetaBean.class, "fieldGet", e);
         }
     }
 

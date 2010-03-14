@@ -51,7 +51,7 @@ public class Converter {
         try {
             return reflectiveFactory.getConstructor(type, String.class).newInstance(string);
         } catch (ReflectiveException e) {
-           throw new StringBeanException(0, e);
+           throw new StringBeanException(Converter.class, "convert", e);
         }
     }
 

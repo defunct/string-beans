@@ -1,17 +1,20 @@
 package com.goodworkalan.stringbeans;
 
-import com.goodworkalan.cassandra.CassandraException;
-import com.goodworkalan.cassandra.Report;
+import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class StringBeanException extends CassandraException {
-    /** Serial version id. */
-    private static final long serialVersionUID = 1L;
+import com.goodworkalan.danger.ContextualDanger;
 
-    public StringBeanException(int code) {
-        super(code, new Report());
+@SuppressWarnings("serial")
+public class StringBeanException extends ContextualDanger {
+    /** A cache of resource bundles. */
+    private final static ConcurrentHashMap<String, ResourceBundle> bundles = new ConcurrentHashMap<String, ResourceBundle>();
+
+    public StringBeanException(Class<?> context, String code) {
+        super(bundles, context, code, null);
     }
     
-    public StringBeanException(int code, Throwable cause) {
-        super(code, new Report(), cause);
+    public StringBeanException(Class<?> context, String code, Throwable cause, Object...arguments) {
+        super(bundles, context, code, cause);
     }
 }

@@ -66,7 +66,7 @@ public class MetaMap implements MetaObject {
             try {
                 return reflectiveFactory.getConstructor(mapClass).newInstance();
             } catch (ReflectiveException e) {
-                throw new StringBeanException(0, e);
+                throw new StringBeanException(MetaMap.class, "newInstance", e);
             }
         } else if (SortedMap.class.isAssignableFrom(mapClass)) {
             return new TreeMap<Object, Object>();
