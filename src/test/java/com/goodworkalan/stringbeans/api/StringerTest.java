@@ -14,7 +14,7 @@ import com.goodworkalan.stringbeans.XMLEmitter;
 import com.goodworkalan.stringbeans.XMLEmitterBuilder;
 import com.goodworkalan.stringbeans.XMLParser;
 
-public class TestStringer {
+public class StringerTest {
     @Test
     public void testConversion() {
         Person person = new Person();
@@ -32,6 +32,7 @@ public class TestStringer {
         XMLEmitter emitter = new XMLEmitterBuilder(stringer).newXMLEmitter(out);
         
         emitter.emit(person);
+        System.out.println(out.toString());
 
         XMLParser parser = new XMLParser(stringer);
         
