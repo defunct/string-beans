@@ -23,7 +23,10 @@ public class ObjectStack {
     
     private void push(String name, Class<?> objectClass) {
         MetaObject metaObject;
-        Class<?> propertyClass = objectInfoStack.getLast().getPropertyClass(name);
+        Class<?> propertyClass = null;
+        if (!objectInfoStack.isEmpty()) {
+            propertyClass = objectInfoStack.getLast().getPropertyClass(name);
+        }
         if (objectClass == null) {
             metaObject = MetaObjects.getInstance(stringer, propertyClass);
         } else if (objectClass.equals(ClassNotAvailable.class) && stringer.hasSubClasses(propertyClass)) {
@@ -32,7 +35,7 @@ public class ObjectStack {
             if (!stringer.isSubClass(objectClass)) {
                 throw new StringBeanException(ObjectStack.class, "pushIsNotSubClass");
             }
-            if (!propertyClass.isAssignableFrom(objectClass)) {
+            if (propertyClass != null && !propertyClass.isAssignableFrom(objectClass)) {
                 throw new StringBeanException(ObjectStack.class, "pushIsNotAssignableFrom");
             }
             metaObject = MetaObjects.getInstance(stringer, objectClass);
@@ -102,6 +105,7 @@ public class ObjectStack {
                     metaObject.set(object, entry.getKey(), entry.getValue());
                 }
             }
+            // FIXME Move down to assign when object is built.
         } else if (!objectInfoStack.isEmpty()) {
             objectInfoStack.getLast().set(objectStack.getLast(), pushedName, value);
         }
