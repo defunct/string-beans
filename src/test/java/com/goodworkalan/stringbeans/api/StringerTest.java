@@ -32,11 +32,10 @@ public class StringerTest {
         XMLEmitter emitter = new XMLEmitterBuilder(stringer).newXMLEmitter(out);
         
         emitter.emit(person);
-        System.out.println(out.toString());
 
         XMLParser parser = new XMLParser(stringer);
         
-        person = (Person) parser.parse(new ByteArrayInputStream(out.toByteArray()));
+        person = parser.parse(Person.class, new ByteArrayInputStream(out.toByteArray()));
         
         assertEquals(person.firstName, "Thomas");
         assertEquals(person.lastName, "Paine");

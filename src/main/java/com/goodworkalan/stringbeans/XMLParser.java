@@ -15,14 +15,15 @@ public class XMLParser extends Parser {
         this.stringer = stringer;
     }
 
-    public Object parse(InputStream in) {
+    public <T> T parse(Class<T> rootClass, InputStream in) {
         XMLReader xr;
         try {
             xr = XMLReaderFactory.createXMLReader();
         } catch (SAXException e) {
             throw new StringBeanException(XMLParser.class, "createXMLReader", e);
         }
-        XMLParserHandler handler = new XMLParserHandler(stringer);
+        Object[] reference = new Object[1];
+        XMLParserHandler handler = new XMLParserHandler(stringer, new MetaRoot<T>(rootClass), reference);
         xr.setContentHandler(handler);
         try {
             xr.parse(new InputSource(in));
@@ -31,6 +32,6 @@ public class XMLParser extends Parser {
         } catch (SAXException e) {
             throw new StringBeanException(XMLParser.class, "parseException", e);
         }
-        return handler.getObject();
+        return rootClass.cast(reference[0]);
     }
 }
