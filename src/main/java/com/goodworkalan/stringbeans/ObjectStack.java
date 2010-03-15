@@ -17,16 +17,15 @@ public class ObjectStack {
     
     private final LinkedList<String> nameStack = new LinkedList<String>();
 
-    public ObjectStack(Stringer stringer) {
+    public ObjectStack(Stringer stringer, MetaObject rootMeta, Object root) {
         this.stringer = stringer;
+        this.objectInfoStack.addLast(rootMeta);
+        this.objectStack.addLast(root);
     }
     
     private void push(String name, Class<?> objectClass) {
         MetaObject metaObject;
-        Class<?> propertyClass = null;
-        if (!objectInfoStack.isEmpty()) {
-            propertyClass = objectInfoStack.getLast().getPropertyClass(name);
-        }
+        Class<?> propertyClass = objectInfoStack.getLast().getPropertyClass(name);
         if (objectClass == null) {
             metaObject = MetaObjects.getInstance(stringer, propertyClass);
         } else if (objectClass.equals(ClassNotAvailable.class) && stringer.hasSubClasses(propertyClass)) {
@@ -35,7 +34,7 @@ public class ObjectStack {
             if (!stringer.isSubClass(objectClass)) {
                 throw new StringBeanException(ObjectStack.class, "pushIsNotSubClass");
             }
-            if (propertyClass != null && !propertyClass.isAssignableFrom(objectClass)) {
+            if (!propertyClass.isAssignableFrom(objectClass)) {
                 throw new StringBeanException(ObjectStack.class, "pushIsNotAssignableFrom");
             }
             metaObject = MetaObjects.getInstance(stringer, objectClass);
