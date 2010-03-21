@@ -1,4 +1,4 @@
-package com.goodworkalan.infuse;
+package com.goodworkalan.stringbeans.url;
 
 import java.util.Collection;
 import java.util.Iterator;

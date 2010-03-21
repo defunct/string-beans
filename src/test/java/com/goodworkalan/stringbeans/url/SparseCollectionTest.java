@@ -1,4 +1,4 @@
-package com.goodworkalan.infuse;
+package com.goodworkalan.stringbeans.url;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import org.testng.annotations.Test;
+
+import com.goodworkalan.stringbeans.url.SparseCollection;
 
 /**
  * Unit tests for {@link SparseCollection}.
