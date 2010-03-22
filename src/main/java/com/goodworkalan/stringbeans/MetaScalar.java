@@ -1,5 +1,7 @@
 package com.goodworkalan.stringbeans;
 
+import java.lang.reflect.Type;
+
 public class MetaScalar implements MetaObject {
     private final Class<?> objectClass;
 
@@ -19,7 +21,7 @@ public class MetaScalar implements MetaObject {
         return true;
     }
 
-    public Class<?> getPropertyClass(String name) {
+    public Type getPropertyType(String name) {
         throw new UnsupportedOperationException();
     }
 

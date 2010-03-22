@@ -1,5 +1,6 @@
 package com.goodworkalan.stringbeans;
 
+import java.lang.reflect.Type;
 import java.util.Collections;
 
 import com.goodworkalan.reflective.Constructor;
@@ -26,7 +27,7 @@ public class MetaRoot<T> implements MetaObject {
         throw new UnsupportedOperationException();
     }
     
-    public Class<?> getPropertyClass(String name) {
+    public Type getPropertyType(String name) {
         return constructor.getNative().getDeclaringClass();
     }
     

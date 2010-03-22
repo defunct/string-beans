@@ -14,6 +14,7 @@ public class StringBeansProject extends ProjectModule {
                 .main()
                     .depends()
                         .artifact(new Artifact("com.github.bigeasy.danger/danger/0.1"))
+                        .artifact(new Artifact("com.github.bigeasy.diffuse/diffuse/0.1"))
                         .artifact(new Artifact("com.goodworkalan/reflective/0.1"))
                         .end()
                     .end()

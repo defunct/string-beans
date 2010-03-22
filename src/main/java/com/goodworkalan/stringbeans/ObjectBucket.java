@@ -1,20 +1,22 @@
 package com.goodworkalan.stringbeans;
 
+import java.lang.reflect.Type;
+
 public class ObjectBucket {
-    private final Class<?> propertyClass;
+    private final Type propertyType;
 
     private final String name;
 
     private final Object value;
 
-    public ObjectBucket(Class<?> propertyClass, String name, Object value) {
-        this.propertyClass = propertyClass;
+    public ObjectBucket(Type propertyType, String name, Object value) {
+        this.propertyType = propertyType;
         this.name = name;
         this.value = value;
     }
 
-    public Class<?> getPropertyClass() {
-        return propertyClass;
+    public Type getPropertyType() {
+        return propertyType;
     }
 
     public String getName() {

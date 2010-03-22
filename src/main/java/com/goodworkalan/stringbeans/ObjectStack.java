@@ -1,10 +1,8 @@
 package com.goodworkalan.stringbeans;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.LinkedList;
-import java.util.Map;
-
-import com.goodworkalan.reflective.ReflectiveFactory;
 
 public class ObjectStack {
     private final Stringer stringer;
@@ -25,15 +23,16 @@ public class ObjectStack {
     
     private void push(String name, Class<?> objectClass) {
         MetaObject metaObject;
-        Class<?> propertyClass = objectInfoStack.getLast().getPropertyClass(name);
+        Type propertyType = objectInfoStack.getLast().getPropertyType(name);
         if (objectClass == null) {
-            metaObject = MetaObjects.getInstance(stringer, propertyClass);
-        } else if (objectClass.equals(ClassNotAvailable.class) && stringer.hasSubClasses(propertyClass)) {
+            metaObject = MetaObjects.getInstance(stringer, propertyType);
+        } /* else if (objectClass.equals(ClassNotAvailable.class) && stringer.hasSubClasses(propertyClass)) {
             metaObject = new MetaMap(new ReflectiveFactory(), (ParameterizedType) Dictionary.class.getGenericSuperclass());
-        } else {
+        } */ else {
             if (!stringer.isSubClass(objectClass)) {
                 throw new StringBeanException(ObjectStack.class, "pushIsNotSubClass");
             }
+            Class<?> propertyClass = (propertyType instanceof Class<?>) ? (Class<?>) propertyType : (Class<?>) ((ParameterizedType) propertyType).getRawType();
             if (!propertyClass.isAssignableFrom(objectClass)) {
                 throw new StringBeanException(ObjectStack.class, "pushIsNotAssignableFrom");
             }
@@ -41,9 +40,7 @@ public class ObjectStack {
         }
         if (!metaObject.isScalar()) {
             Object newObject = metaObject.newInstance();
-            if (!objectInfoStack.isEmpty()) {
-                objectInfoStack.getLast().set(objectStack.getLast(), name, newObject);
-            }
+            objectInfoStack.getLast().set(objectStack.getLast(), name, newObject);
             objectStack.add(newObject);
         }
         nameStack.addLast(name);
@@ -59,16 +56,6 @@ public class ObjectStack {
         }
     }
 
-    private void createContainer(String name, MetaObject metaObject) {
-        if (!metaObject.isScalar()) {
-            Object newObject = metaObject.newInstance();
-            if (!objectInfoStack.isEmpty()) {
-                objectInfoStack.getLast().set(objectStack.getLast(), name, newObject);
-            }
-            objectStack.add(newObject);
-        }
-    }
-
     public boolean isScalar() {
         return objectInfoStack.getLast().isScalar();
     }
@@ -80,34 +67,16 @@ public class ObjectStack {
             throw new StringBeanException(ObjectStack.class, "forName", e);
         }
     }
+    
+    public Object getTop() {
+        return objectStack.getLast();
+    }
 
     public void pop(String string) {
         MetaObject scalar = objectInfoStack.removeLast();
-        Object value = stringer.getConverter().fromString(scalar.getObjectClass(), string);
         String pushedName = nameStack.removeLast();
-        if (pushedName.equals("class")) {
-            Class<?> objectClass = forName(pushedName);
-            MetaObject metaObject = objectInfoStack.removeLast();
-            Object object = objectStack.removeLast();
-            if (object instanceof Dictionary) {
-                Dictionary dictionary = (Dictionary) object;
-                if (!stringer.isSubClass(objectClass)) {
-                    throw new StringBeanException(ObjectStack.class, "popIsNotSubClass");
-                }
-                if (!metaObject.getObjectClass().isAssignableFrom(objectClass)) {
-                    throw new StringBeanException(ObjectStack.class, "popIsNotAssignableFrom");
-                } 
-                createContainer(nameStack.getLast(), MetaObjects.getInstance(stringer, objectClass));
-                metaObject = objectInfoStack.getLast();
-                object = objectStack.getLast();
-                for (Map.Entry<String, Object> entry : dictionary.entrySet()) {
-                    metaObject.set(object, entry.getKey(), entry.getValue());
-                }
-            }
-            // FIXME Move down to assign when object is built.
-        } else if (!objectInfoStack.isEmpty()) {
-            objectInfoStack.getLast().set(objectStack.getLast(), pushedName, value);
-        }
+        Object value = stringer.getConverter().fromString(scalar.getObjectClass(), string);
+        objectInfoStack.getLast().set(objectStack.getLast(), pushedName, value);
         lastPopped = value;
     }
 

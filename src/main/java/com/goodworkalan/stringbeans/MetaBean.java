@@ -32,17 +32,21 @@ public class MetaBean implements MetaObject {
     public MetaBean(Class<?> object) {
         BeanInfo beanInfo;
         try {
-            beanInfo = Introspector.getBeanInfo(object, Object.class);
+            beanInfo = Introspector.getBeanInfo(object);
         } catch (IntrospectionException e) {
             throw new StringBeanException(MetaBean.class, "getBeanInfo", e);
         }
         for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
             java.lang.reflect.Method reader = property.getReadMethod();
             java.lang.reflect.Method writer = property.getWriteMethod();
-            if (!(reader == null || writer == null)) {
+            if (!(reader == null && writer == null)) {
                 names.add(property.getName());
-                writers.put(property.getName(), new Method(writer));
-                readers.put(property.getName(), new Method(reader));
+                if (writer != null) {
+                    writers.put(property.getName(), new Method(writer));
+                }
+                if (reader != null) {
+                    readers.put(property.getName(), new Method(reader));
+                }
             }
         }
         for (java.lang.reflect.Field field : object.getFields()) {
@@ -133,7 +137,10 @@ public class MetaBean implements MetaObject {
         try {
             Field field = fields.get(name);
             if (field == null) {
-                writers.get(name).invoke(object, value);
+                Method writer = writers.get(name);
+                if (writer != null) {
+                    writer.invoke(object, value);
+                }
             } else {
                 field.set(object, value);
             }

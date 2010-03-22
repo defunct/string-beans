@@ -33,7 +33,7 @@ public class MetaMap implements MetaObject {
 
                     public ObjectBucket next() {
                         Map.Entry<?, ?> entry = (Entry<?, ?>) eachEntry.next();
-                        return new ObjectBucket(getPropertyClass(null), entry.getKey().toString(), entry.getValue());
+                        return new ObjectBucket(getPropertyType(null), entry.getKey().toString(), entry.getValue());
                     }
 
                     public void remove() {
@@ -48,12 +48,8 @@ public class MetaMap implements MetaObject {
         return (Class<?>) pt.getRawType();
     }
 
-    public Class<?> getPropertyClass(String name) {
-        Type type = pt.getActualTypeArguments()[1];
-        if (type instanceof ParameterizedType) {
-            return (Class<?>) pt.getRawType();
-        }
-        return (Class<?>) type;
+    public Type getPropertyType(String name) {
+        return pt.getActualTypeArguments()[1];
     }
 
     public boolean isScalar() {
