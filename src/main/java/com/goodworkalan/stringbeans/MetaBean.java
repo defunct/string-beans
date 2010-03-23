@@ -24,6 +24,7 @@ public class MetaBean implements MetaObject {
     private final Class<?> objectClass;
     private final Constructor<?> constructor;
     private final Set<String> names = new HashSet<String>();
+    
     private final Map<String, Method> writers = new HashMap<String, Method>();
 
     private final Map<String, Method> readers = new HashMap<String, Method>();
@@ -40,11 +41,11 @@ public class MetaBean implements MetaObject {
             java.lang.reflect.Method reader = property.getReadMethod();
             java.lang.reflect.Method writer = property.getWriteMethod();
             if (!(reader == null && writer == null)) {
-                names.add(property.getName());
                 if (writer != null) {
                     writers.put(property.getName(), new Method(writer));
                 }
                 if (reader != null) {
+                    names.add(property.getName());
                     readers.put(property.getName(), new Method(reader));
                 }
             }
@@ -94,8 +95,8 @@ public class MetaBean implements MetaObject {
                         try {
                             Field field = fields.get(name);
                             if (field == null) {
-                                Method writer = writers.get(name);
-                                return new ObjectBucket(writer.getNative().getReturnType(), name, writer.invoke(object));
+                                Method reader = readers.get(name);
+                                return new ObjectBucket(reader.getNative().getReturnType(), name, reader.invoke(object));
                             }
                             return new ObjectBucket(field.getNative().getType(),name, field.get(object));
                         } catch (ReflectiveException e) {
@@ -153,7 +154,7 @@ public class MetaBean implements MetaObject {
         try {
             Field field = fields.get(name);
             if (field == null) {
-                return writers.get(name).invoke(object);
+                return readers.get(name).invoke(object);
             }
             return field.get(object);
         } catch (ReflectiveException e) {

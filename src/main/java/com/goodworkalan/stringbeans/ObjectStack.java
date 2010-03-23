@@ -26,12 +26,7 @@ public class ObjectStack {
         Type propertyType = objectInfoStack.getLast().getPropertyType(name);
         if (objectClass == null) {
             metaObject = MetaObjects.getInstance(stringer, propertyType);
-        } /* else if (objectClass.equals(ClassNotAvailable.class) && stringer.hasSubClasses(propertyClass)) {
-            metaObject = new MetaMap(new ReflectiveFactory(), (ParameterizedType) Dictionary.class.getGenericSuperclass());
-        } */ else {
-            if (!stringer.isSubClass(objectClass)) {
-                throw new StringBeanException(ObjectStack.class, "pushIsNotSubClass");
-            }
+        } else {
             Class<?> propertyClass = (propertyType instanceof Class<?>) ? (Class<?>) propertyType : (Class<?>) ((ParameterizedType) propertyType).getRawType();
             if (!propertyClass.isAssignableFrom(objectClass)) {
                 throw new StringBeanException(ObjectStack.class, "pushIsNotAssignableFrom");

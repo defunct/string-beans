@@ -1,5 +1,8 @@
 package com.goodworkalan.stringbeans;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 import com.goodworkalan.reflective.ReflectiveException;
 import com.goodworkalan.reflective.ReflectiveFactory;
 
@@ -18,26 +21,27 @@ public class Converter {
      *            The type to convert.
      * @return An Object derived type.
      */
-    public static Class<?> box(Class<?> type) {
-        if (type.isPrimitive()) {
-            if (long.class.isAssignableFrom(type)) {
+    public static Class<?> box(Type type) {
+        Class<?> raw =  (type instanceof Class<?>) ? (Class<?>) type : (Class<?>) ((ParameterizedType) type).getRawType();
+        if (raw.isPrimitive()) {
+            if (long.class.isAssignableFrom(raw)) {
                 return Long.class;
-            } else if (int.class.isAssignableFrom(type)) {
+            } else if (int.class.isAssignableFrom(raw)) {
                 return Integer.class;
-            } else if (short.class.isAssignableFrom(type)) {
+            } else if (short.class.isAssignableFrom(raw)) {
                 return Short.class;
-            } else if (char.class.isAssignableFrom(type)) {
+            } else if (char.class.isAssignableFrom(raw)) {
                 return Character.class;
-            } else if (byte.class.isAssignableFrom(type)) {
+            } else if (byte.class.isAssignableFrom(raw)) {
                 return Byte.class;
-            } else if (boolean.class.isAssignableFrom(type)) {
+            } else if (boolean.class.isAssignableFrom(raw)) {
                 return Boolean.class;
-            } else if (float.class.isAssignableFrom(type)) {
+            } else if (float.class.isAssignableFrom(raw)) {
                 return Float.class;
             }
             return Double.class;
         }
-        return type;
+        return raw;
     }
     
     public Converter(){

@@ -8,7 +8,6 @@ import java.util.Set;
 public class StringerBuilder {
     private final Set<Class<?>> beans = new HashSet<Class<?>>();
 
-    private final Map<String, Class<?>> aliases = new HashMap<String, Class<?>>();
     private final Map<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
 
     public StringerBuilder() {
@@ -16,11 +15,6 @@ public class StringerBuilder {
     
     public StringerBuilder bean(Class<?> type) {
         beans.add(type);
-        return this;
-    }
-    
-    public StringerBuilder alias(String name, Class<?> type) {
-        aliases.put(name, type);
         return this;
     }
     

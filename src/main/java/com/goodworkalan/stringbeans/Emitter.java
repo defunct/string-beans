@@ -32,7 +32,7 @@ public abstract class Emitter {
         } else if (Collection.class.isAssignableFrom(object.getClass())) {
             emitSeries(object.getClass(), (Collection<?>) object);
         } else if (stringer.isBean(object.getClass()))  {
-            emitBean(stringer.getAlias(object.getClass()), object.getClass(), new MetaBean(object.getClass()), object);
+            emitBean("bean", object.getClass(), new MetaBean(object.getClass()), object);
         } else {
             emitScalar(stringer.getConverter(), object.getClass(), object);
         }
@@ -41,7 +41,7 @@ public abstract class Emitter {
     public void emit(Object object) {
         MetaBean objectInfo = new MetaBean(object.getClass());
         beginDocument();
-        emitBean(stringer.getAlias(object.getClass()), Object.class, objectInfo, object);
+        emitBean("bean", Object.class, objectInfo, object);
         endDocument();
     }
 }
