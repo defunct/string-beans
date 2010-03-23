@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 
 import org.testng.annotations.Test;
 
+import com.goodworkalan.stringbeans.ClassConverter;
 import com.goodworkalan.stringbeans.StringConverter;
 import com.goodworkalan.stringbeans.Stringer;
 import com.goodworkalan.stringbeans.StringerBuilder;
@@ -26,6 +27,7 @@ public class StringerTest {
         Stringer stringer = new StringerBuilder()
             .bean(Person.class)
             .converter(String.class, new StringConverter())
+            .converter(Class.class, new ClassConverter())
             .getInstance();
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();

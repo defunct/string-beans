@@ -72,7 +72,7 @@ public class XMLEmitter extends Emitter {
             if (bucket.getValue() == null) {
                 startElement(bucket.getName(), "null", "true");
             } else {
-                if (!box(bucket.getPropertyClass()).equals(bucket.getValue().getClass())) {
+                if (!box(bucket.getPropertyType()).equals(bucket.getValue().getClass())) {
                     startElement(bucket.getName(), "class", bucket.getValue().getClass().getCanonicalName());
                 } else {
                     startElement(bucket.getName());
@@ -115,6 +115,10 @@ public class XMLEmitter extends Emitter {
     
     @Override
     protected void emitScalar(Converter converter, Class<?> type, Object object) {
+        // FIXME See http://bigeasy.lighthouseapp.com/projects/45005/tickets/18
+        if (object instanceof Class<?>) {
+            object = ((Class<?>) object).getCanonicalName();
+        }
         char[] chars = converter.toString(object).toCharArray();
         try {
             handler.characters(chars, 0, chars.length);
