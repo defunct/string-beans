@@ -28,7 +28,7 @@ public class CollectionParserTest {
         Stringer stringer = new StringerBuilder().converter(Class.class, new ClassConverter()).bean(Person.class).bean(Address.class).getInstance();
         CollectionParser parser = new CollectionParser(stringer);
         
-        person = parser.parse(Person.class, (Map<?, ?>) Diffuse.flatten(person, true));
+        person = parser.parse(Person.class, (Map<?, ?>) new Diffuse().flatten(person, true));
         
         assertEquals(person.firstName, "Alan");
         assertEquals(person.lastName, "Gutierrez");
