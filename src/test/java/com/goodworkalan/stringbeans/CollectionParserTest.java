@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.testng.annotations.Test;
 
-import com.goodworkalan.diffuse.Diffuse;
+import com.goodworkalan.diffuse.Diffuser;
 
 public class CollectionParserTest {
     @Test
@@ -28,7 +28,7 @@ public class CollectionParserTest {
         Stringer stringer = new StringerBuilder().converter(Class.class, new ClassConverter()).bean(Person.class).bean(Address.class).getInstance();
         CollectionParser parser = new CollectionParser(stringer);
         
-        person = parser.parse(Person.class, (Map<?, ?>) new Diffuse().flatten(person, true));
+        person = parser.parse(Person.class, (Map<?, ?>) new Diffuser().flatten(person, true));
         
         assertEquals(person.firstName, "Alan");
         assertEquals(person.lastName, "Gutierrez");
