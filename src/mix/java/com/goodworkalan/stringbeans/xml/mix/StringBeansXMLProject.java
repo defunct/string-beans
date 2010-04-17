@@ -10,10 +10,10 @@ public class StringBeansXMLProject extends ProjectModule {
     public void build(Builder builder) {
         builder
             .cookbook(JavaProject.class)
-                .produces(new Artifact("com.goodworkalan/stringbeans-xml/0.1"))
+                .produces(new Artifact("com.goodworkalan/string-beans-xml/0.1"))
                 .main()
                     .depends()
-                        .artifact(new Artifact("com.goodworkalan/stringbeans/0.1"))
+                        .artifact(new Artifact("com.goodworkalan/string-beans/0.1"))
                         .end()
                     .end()
                 .test()

@@ -35,7 +35,7 @@ public class StringerTest {
         
         emitter.emit(person);
 
-        XMLParser parser = new XMLParser(stringer);
+        XMLParser parser = new XMLParser(stringer, true);
         
         person = parser.parse(Person.class, new ByteArrayInputStream(out.toByteArray()));
         

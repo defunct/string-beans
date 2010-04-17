@@ -8,8 +8,8 @@ public class XMLParserHandler extends DefaultHandler {
 
     private final StringBuilder characters = new StringBuilder();
 
-    public XMLParserHandler(Stringer stringer, MetaObject metaRoot, Object root) {
-        this.objectStack = new ObjectStack(stringer, metaRoot, root);
+    public XMLParserHandler(Stringer stringer, MetaObject metaRoot, Object root, boolean ignoreMissing) {
+        this.objectStack = new ObjectStack(stringer, metaRoot, root, ignoreMissing);
     }
     
     public Object getObject() {

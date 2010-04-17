@@ -11,8 +11,11 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class XMLParser extends Parser {
     private final Stringer stringer;
     
-    public XMLParser(Stringer stringer) {
+    private final boolean ignoreMissing;
+    
+    public XMLParser(Stringer stringer, boolean ignoreMissing) {
         this.stringer = stringer;
+        this.ignoreMissing = ignoreMissing;
     }
 
     public <T> T parse(Class<T> rootClass, InputStream in) {
@@ -23,7 +26,7 @@ public class XMLParser extends Parser {
             throw new StringBeanException(XMLParser.class, "createXMLReader", e);
         }
         Object[] reference = new Object[1];
-        XMLParserHandler handler = new XMLParserHandler(stringer, new MetaRoot<T>(rootClass), reference);
+        XMLParserHandler handler = new XMLParserHandler(stringer, new MetaRoot<T>(rootClass), reference, ignoreMissing);
         xr.setContentHandler(handler);
         try {
             xr.parse(new InputSource(in));
