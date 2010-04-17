@@ -14,16 +14,25 @@ public class ObjectStack {
     private final LinkedList<Object> objectStack = new LinkedList<Object>();
     
     private final LinkedList<String> nameStack = new LinkedList<String>();
+    
+    private final boolean ignoreMissing;
 
-    public ObjectStack(Stringer stringer, MetaObject rootMeta, Object root) {
+    public ObjectStack(Stringer stringer, MetaObject rootMeta, Object root, boolean ignoreMissing) {
         this.stringer = stringer;
         this.objectInfoStack.addLast(rootMeta);
         this.objectStack.addLast(root);
+        this.ignoreMissing = ignoreMissing;
     }
     
-    private void push(String name, Class<?> objectClass) {
+    private boolean push(String name, Class<?> objectClass) {
         MetaObject metaObject;
         Type propertyType = objectInfoStack.getLast().getPropertyType(name);
+        if (propertyType == null) {
+            if (ignoreMissing) {
+                return false;
+            }
+            throw new StringBeanException(ObjectStack.class, "doesNotExist");
+        } 
         if (objectClass == null) {
             metaObject = MetaObjects.getInstance(stringer, propertyType);
         } else {
@@ -41,14 +50,14 @@ public class ObjectStack {
         nameStack.addLast(name);
         objectInfoStack.add(metaObject);
         lastPopped = null;
+        return true;
     }
  
-    public void push(String name, String className) {
+    public boolean push(String name, String className) {
         if (className == null) {
-            push(name, (Class<?>) null);
-        } else {
-            push(name, forName(className));
+            return push(name, (Class<?>) null);
         }
+        return push(name, forName(className));
     }
 
     public boolean isScalar() {

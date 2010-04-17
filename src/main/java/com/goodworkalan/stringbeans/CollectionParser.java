@@ -6,8 +6,11 @@ import java.util.Map;
 public class CollectionParser {
     private final Stringer stringer;
     
-    public CollectionParser(Stringer stringer) {
+    private final boolean ignoreMissing;
+    
+    public CollectionParser(Stringer stringer, boolean ignoreMissing) {
         this.stringer = stringer;
+        this.ignoreMissing = ignoreMissing;
     }
 
     @SuppressWarnings("unchecked")
@@ -53,22 +56,24 @@ public class CollectionParser {
     }
     private void parseCollection(ObjectStack objectStack, Collection<Object> collection) {
         for (Object value : collection) {
-            objectStack.push(null, getClassName(value));
-            pop(objectStack, value);
+            if (objectStack.push(null, getClassName(value))) {
+                pop(objectStack, value);
+            }
         }
     }
 
     private void parseMap(ObjectStack objectStack, Map<Object, Object> map) {
         for (Map.Entry<Object, Object> entry : map.entrySet()) {
             Object value = entry.getValue();
-            objectStack.push(entry.getKey().toString(), getClassName(value));
-            pop(objectStack, value);
+            if (objectStack.push(entry.getKey().toString(), getClassName(value))) {
+                pop(objectStack, value);
+            }
         }
     }
     
     public <T> void populate(T rootObject, Map<?, ?> map) {
         if (map != null) {
-            ObjectStack objectStack = new ObjectStack(stringer, MetaObjects.getInstance(stringer, rootObject.getClass()), rootObject);
+            ObjectStack objectStack = new ObjectStack(stringer, MetaObjects.getInstance(stringer, rootObject.getClass()), rootObject, ignoreMissing);
             parseMap(objectStack, toObjectMap(map));
             objectStack.pop();
         }
@@ -91,7 +96,7 @@ public class CollectionParser {
             return null;
         }
         Object[] bean = new Object[1];
-        ObjectStack objectStack = new ObjectStack(stringer, new MetaRoot<T>(rootClass), bean);
+        ObjectStack objectStack = new ObjectStack(stringer, new MetaRoot<T>(rootClass), bean, ignoreMissing);
         objectStack.push(null, null);
         parseMap(objectStack, toObjectMap(map));
         objectStack.pop();

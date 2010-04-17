@@ -129,6 +129,9 @@ public class MetaBean implements MetaObject {
         Field field = fields.get(name);
         if (field == null) {
             Method reader = readers.get(name);
+            if (reader == null) {
+                return null;
+            }
             return reader.getNative().getGenericReturnType();
         }
         return field.getNative().getGenericType();
