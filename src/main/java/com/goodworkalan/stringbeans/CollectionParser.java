@@ -30,6 +30,7 @@ public class CollectionParser {
     
     private void pop(ObjectStack objectStack, Object value) {
         if (value == null) {
+            // What? Don't we set nulls?
         } else if (objectStack.isScalar()) {
             objectStack.pop(value.toString());
         } else {
@@ -64,6 +65,15 @@ public class CollectionParser {
             pop(objectStack, value);
         }
     }
+    
+    public <T> void populate(T rootObject, Map<?, ?> map) {
+        if (map != null) {
+            ObjectStack objectStack = new ObjectStack(stringer, MetaObjects.getInstance(stringer, rootObject.getClass()), rootObject);
+            parseMap(objectStack, toObjectMap(map));
+            objectStack.pop();
+        }
+
+    }
 
     /**
      * Convert the given map into an object graph with the given root class.
@@ -76,7 +86,7 @@ public class CollectionParser {
      *            The map to convert.
      * @return An instance of the root class.
      */
-    public <T> T parse(Class<T> rootClass, Map<?, ?> map) {
+    public <T> T create(Class<T> rootClass, Map<?, ?> map) {
         if (map == null) {
             return null;
         }

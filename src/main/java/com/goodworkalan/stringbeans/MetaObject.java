@@ -17,5 +17,8 @@ public interface MetaObject {
      */
     public Iterable<ObjectBucket> buckets(Object object);
     public void set(Object object, String name, Object value);
+    
+    // FIXME To support a set of types, this will have to take a name and a
+    // class. Only if the set is a singleton set, can the class be null.
     public Type getPropertyType(String name);
 }

@@ -60,7 +60,7 @@ public class MetaMap implements MetaObject {
         Class<?> mapClass = (Class<?>) pt.getRawType();
         if (!mapClass.isInterface()) {
             try {
-                return reflectiveFactory.getConstructor(mapClass).newInstance();
+                return reflectiveFactory.newInstance(mapClass);
             } catch (ReflectiveException e) {
                 throw new StringBeanException(MetaMap.class, "newInstance", e);
             }

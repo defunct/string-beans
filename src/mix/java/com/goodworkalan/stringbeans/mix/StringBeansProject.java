@@ -10,7 +10,7 @@ public class StringBeansProject extends ProjectModule {
     public void build(Builder builder) {
         builder
             .cookbook(JavaProject.class)
-                .produces(new Artifact("com.goodworkalan/stringbeans/0.1"))
+                .produces(new Artifact("com.goodworkalan/string-beans/0.1"))
                 .main()
                     .depends()
                         .artifact(new Artifact("com.github.bigeasy.danger/danger/0.1"))
