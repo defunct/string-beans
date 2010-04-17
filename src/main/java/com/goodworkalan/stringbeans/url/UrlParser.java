@@ -12,8 +12,8 @@ import com.goodworkalan.stringbeans.Stringer;
 public class UrlParser {
     private final CollectionParser collectionParser;
     
-    public UrlParser(Stringer stringer) {
-        this.collectionParser = new CollectionParser(stringer);
+    public UrlParser(Stringer stringer, boolean ignoreMissing) {
+        this.collectionParser = new CollectionParser(stringer, ignoreMissing);
     }
     
     private static StringToObjectMap tree(Map<String, String> form) {
