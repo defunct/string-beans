@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.goodworkalan.reflective.Constructor;
 import com.goodworkalan.reflective.Field;
 import com.goodworkalan.reflective.Method;
 import com.goodworkalan.reflective.ReflectiveException;
@@ -22,7 +21,6 @@ import com.goodworkalan.reflective.ReflectiveFactory;
 public class MetaBean implements MetaObject {
     private final Type type;
     private final Class<?> objectClass;
-    private final Constructor<?> constructor;
     private final Set<String> names = new HashSet<String>();
     
     private final Map<String, Method> writers = new HashMap<String, Method>();
@@ -30,10 +28,10 @@ public class MetaBean implements MetaObject {
     private final Map<String, Method> readers = new HashMap<String, Method>();
     private final Map<String, Field> fields = new HashMap<String, Field>();
 
-    public MetaBean(Class<?> object) {
+    public MetaBean(Class<?> objectClass) {
         BeanInfo beanInfo;
         try {
-            beanInfo = Introspector.getBeanInfo(object);
+            beanInfo = Introspector.getBeanInfo(objectClass);
         } catch (IntrospectionException e) {
             throw new StringBeanException(MetaBean.class, "getBeanInfo", e);
         }
@@ -50,24 +48,19 @@ public class MetaBean implements MetaObject {
                 }
             }
         }
-        for (java.lang.reflect.Field field : object.getFields()) {
+        for (java.lang.reflect.Field field : objectClass.getFields()) {
             if (Modifier.isPublic(field.getModifiers()) && !names.contains(field.getName())) {
                 names.add(field.getName());
                 fields.put(field.getName(), new Field(field));
             }
         }
-        try {
-            this.constructor = new ReflectiveFactory().getConstructor(object);
-        } catch (ReflectiveException e) {
-            throw new StringBeanException(MetaBean.class, "getConstructor", e);
-        }
-        this.type = object;
-        this.objectClass = object;
+        this.type = objectClass;
+        this.objectClass = objectClass;
     }
 
     public Object newInstance() {
         try {
-            return constructor.newInstance();
+            return new ReflectiveFactory().getConstructor(objectClass).newInstance();
         } catch (ReflectiveException e) {
             throw new StringBeanException(MetaBean.class, "newInstance", e);
         }
@@ -130,7 +123,11 @@ public class MetaBean implements MetaObject {
         if (field == null) {
             Method reader = readers.get(name);
             if (reader == null) {
-                return null;
+                Method writer = writers.get(name);
+                if (writer == null) {
+                    return null;
+                }
+                return writer.getNative().getGenericParameterTypes()[0];
             }
             return reader.getNative().getGenericReturnType();
         }
