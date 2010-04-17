@@ -17,7 +17,7 @@ import java.util.TreeMap;
  * 
  * @author Alan Gutierrez
  */
-public class SparseCollection implements Collection<Object> {
+class SparseCollection implements Collection<Object> {
     /** A tree map of integers to objects used to model a sparse list. */
     public final SortedMap<Integer, Object> map = new TreeMap<Integer, Object>();
 
@@ -75,7 +75,7 @@ public class SparseCollection implements Collection<Object> {
     /**
      * Returns an array of containing all of the collection elements.
      * 
-     * @return An array contianing all of the collection elements.
+     * @return An array containing all of the collection elements.
      */
     public Object[] toArray() {
         return map.values().toArray();
