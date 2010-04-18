@@ -1,6 +1,6 @@
 package com.goodworkalan.stringbeans;
 
-import java.util.Set;
+import com.goodworkalan.utility.ClassAssociation;
 
 /**
  * String beans emitter and parser configuration.
@@ -9,7 +9,7 @@ import java.util.Set;
  */
 public class Stringer {
     /** The set of beans that can be read or written. */
-    private final Set<Class<?>> beans;
+    private final ClassAssociation<Boolean> beans;
     
     /** The set of converters (need a default set). */
     private final Converter converter;
@@ -24,8 +24,8 @@ public class Stringer {
      * @param converter
      *            The object to string converter.
      */
-    public Stringer(Set<Class<?>> beans, Converter converter) {
-        this.beans = beans;
+    public Stringer(ClassAssociation<Boolean> beans, Converter converter) {
+        this.beans = new ClassAssociation<Boolean>(beans);
         this.converter = converter;
     }
 
@@ -40,7 +40,13 @@ public class Stringer {
      *         configuration.
      */
     public boolean isBean(Class<?> type) {
-        return beans.contains(type);
+        if (type.isArray()) {
+            throw new IllegalArgumentException();
+        }
+        if (type.isPrimitive()) {
+            return false;
+        }
+        return beans.get(type);
     }
 
     /**

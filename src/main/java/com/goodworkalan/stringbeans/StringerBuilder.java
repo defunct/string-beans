@@ -1,12 +1,13 @@
 package com.goodworkalan.stringbeans;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+
+import com.goodworkalan.utility.ClassAssociation;
 
 public class StringerBuilder {
-    private final Set<Class<?>> beans = new HashSet<Class<?>>();
+    /** The set of beans that can be read or written. */
+    private final ClassAssociation<Boolean> beans = new ClassAssociation<Boolean>();
 
     private final Map<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
 
@@ -14,7 +15,12 @@ public class StringerBuilder {
     }
     
     public StringerBuilder bean(Class<?> type) {
-        beans.add(type);
+        beans.exact(type, Boolean.TRUE);
+        return this;
+    }
+    
+    public StringerBuilder beanSuperType(Class<?> type) {
+        beans.derived(type, Boolean.TRUE);
         return this;
     }
     
@@ -24,6 +30,7 @@ public class StringerBuilder {
     }
     
     public Stringer getInstance() {
-        return new Stringer(new HashSet<Class<?>>(beans), new ConverterMap(converters));
+        beans.derived(Object.class, Boolean.FALSE);
+        return new Stringer(beans, new ConverterMap(converters));
     }
 }
