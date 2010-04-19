@@ -3,26 +3,22 @@ package com.goodworkalan.stringbeans;
 import java.util.Collection;
 import java.util.Map;
 
-public abstract class Emitter {
+public abstract class AbstractEmitter {
     private final Stringer stringer;
     
-    public Emitter(Stringer stringer) {
+    public AbstractEmitter(Stringer stringer) {
         this.stringer = stringer;
     }
 
-    protected abstract void beginDocument();
-
     protected abstract void emitNull();
 
-    protected abstract void emitScalar(Converter converter, Class<?> type, Object object);
+    protected abstract void emitScalar(Class<?> type, Object object);
 
     protected abstract void emitSeries(Class<?> type, Collection<?> collection);
 
     protected abstract void emitDictionary(Class<?> type, Map<?, ?> map);
 
-    protected abstract void emitBean(String alias, Class<?> type, MetaObject metaObject, Object object);
-
-    protected abstract void endDocument();
+    protected abstract void emitBean(Class<?> type, MetaObject metaObject, Object object);
 
     protected void expandObject(Object object) {
         if (object == null) {
@@ -32,16 +28,13 @@ public abstract class Emitter {
         } else if (Collection.class.isAssignableFrom(object.getClass())) {
             emitSeries(object.getClass(), (Collection<?>) object);
         } else if (stringer.isBean(object.getClass()))  {
-            emitBean("bean", object.getClass(), new MetaBean(object.getClass()), object);
+            emitBean(object.getClass(), new MetaBean(object.getClass()), object);
         } else {
-            emitScalar(stringer.getConverter(), object.getClass(), object);
+            // FIXME See http://bigeasy.lighthouseapp.com/projects/45005/tickets/18
+            if (object instanceof Class<?>) {
+                object = ((Class<?>) object).getCanonicalName();
+            }
+            emitScalar(object.getClass(), stringer.getConverter().toString(object));
         }
-    }
-    
-    public void emit(Object object) {
-        MetaBean objectInfo = new MetaBean(object.getClass());
-        beginDocument();
-        emitBean("bean", Object.class, objectInfo, object);
-        endDocument();
     }
 }
