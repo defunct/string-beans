@@ -10,7 +10,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-public class XMLEmitter extends Emitter {
+public class XMLEmitter extends AbstractEmitter {
     private final ContentHandler handler;
 
     public XMLEmitter(Stringer stringer, ContentHandler handler) {
@@ -18,15 +18,6 @@ public class XMLEmitter extends Emitter {
         this.handler = handler;
     }
 
-    @Override
-    protected void beginDocument() {
-        try {
-            handler.startDocument();
-        } catch (SAXException e) {
-            throw new StringBeanException(XMLEmitter.class, "startDocument", e);
-        }
-    }
-    
     private void startElement(String name, String...attr) {
         AttributesImpl attributes = new AttributesImpl();
         for (int i = 0; i < attr.length; i += 2) {
@@ -84,14 +75,14 @@ public class XMLEmitter extends Emitter {
     }
 
     @Override
-    protected void emitBean(String alias, Class<?> objectClass, MetaObject metaObject, Object object) {
+    protected void emitBean(Class<?> objectClass, MetaObject metaObject, Object object) {
         if (metaObject.getObjectClass().equals(objectClass)) {
-            startElement(alias);
+            startElement("bean");
         } else {
-            startElement(alias, "class", object.getClass().getCanonicalName());
+            startElement("bean", "class", object.getClass().getCanonicalName());
         }
         emitBeanGuts(metaObject, object);
-        endElement(alias);
+        endElement("bean");
     }
     
     @Override
@@ -114,12 +105,8 @@ public class XMLEmitter extends Emitter {
     }
     
     @Override
-    protected void emitScalar(Converter converter, Class<?> type, Object object) {
-        // FIXME See http://bigeasy.lighthouseapp.com/projects/45005/tickets/18
-        if (object instanceof Class<?>) {
-            object = ((Class<?>) object).getCanonicalName();
-        }
-        char[] chars = converter.toString(object).toCharArray();
+    protected void emitScalar(Class<?> type, Object object) {
+        char[] chars = object.toString().toCharArray();
         try {
             handler.characters(chars, 0, chars.length);
         } catch (SAXException e) {
@@ -130,9 +117,14 @@ public class XMLEmitter extends Emitter {
     @Override
     protected void emitNull() {
     }
-    
-    @Override
-    protected void endDocument() {
+
+    public void emit(Object object) {
+        try {
+            handler.startDocument();
+        } catch (SAXException e) {
+            throw new StringBeanException(XMLEmitter.class, "startDocument", e);
+        }
+        expandObject(object);
         try {
             handler.endDocument();
         } catch (SAXException e) {
