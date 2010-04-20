@@ -3,13 +3,15 @@ package com.goodworkalan.stringbeans;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.goodworkalan.stash.Stash;
+
 public class XMLParserHandler extends DefaultHandler {
     private final ObjectStack objectStack;
 
     private final StringBuilder characters = new StringBuilder();
-
-    public XMLParserHandler(Stringer stringer, MetaObject metaRoot, Object root, boolean ignoreMissing) {
-        this.objectStack = new ObjectStack(stringer, metaRoot, root, ignoreMissing);
+    
+    public XMLParserHandler(Stringer stringer, Stash stash, MetaObject metaRoot, Object root, boolean ignoreMissing) {
+        this.objectStack = new ObjectStack(stringer, stash, metaRoot, root, ignoreMissing);
     }
     
     public Object getObject() {

@@ -25,7 +25,7 @@ public class StringerTest {
         person.birthYear = 1759;
         
         Stringer stringer = new StringerBuilder()
-            .bean(Person.class)
+            .isBean(Person.class)
             .converter(String.class, new StringConverter())
             .converter(Class.class, new ClassConverter())
             .getInstance();
