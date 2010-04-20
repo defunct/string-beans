@@ -5,6 +5,7 @@ import java.util.Map;
 import com.goodworkalan.infuse.ParseException;
 import com.goodworkalan.infuse.Part;
 import com.goodworkalan.infuse.Path;
+import com.goodworkalan.stash.Stash;
 import com.goodworkalan.stringbeans.CollectionParser;
 import com.goodworkalan.stringbeans.StringBeanException;
 import com.goodworkalan.stringbeans.Stringer;
@@ -27,6 +28,10 @@ public class UrlParser {
             }
         }
         return tree;
+    }
+    
+    public Stash getStash() {
+        return collectionParser.getStash();
     }
     
     public <T> void populate(T rootObject, Map<String, String> form) {

@@ -110,7 +110,7 @@ public class UrlParserTest {
     }
     
     private UrlParser newUrlParser() {
-        Stringer stringer = new StringerBuilder().bean(Widget.class).getInstance();
+        Stringer stringer = new StringerBuilder().isBean(Widget.class).getInstance();
         UrlParser parser = new UrlParser(stringer, true);
         return parser;
     }
