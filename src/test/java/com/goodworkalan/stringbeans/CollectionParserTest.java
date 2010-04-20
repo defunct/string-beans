@@ -26,7 +26,7 @@ public class CollectionParserTest {
         
         person.addresses.add(home);
         
-        Stringer stringer = new StringerBuilder().converter(Class.class, new ClassConverter()).bean(Person.class).bean(Address.class).getInstance();
+        Stringer stringer = new StringerBuilder().converter(Class.class, new ClassConverter()).isBean(Person.class).isBean(Address.class).getInstance();
         CollectionParser parser = new CollectionParser(stringer, false);
         
         person = parser.create(Person.class, (Map<?, ?>) new Diffuser().diffuse(person, true));
@@ -54,7 +54,7 @@ public class CollectionParserTest {
         
         person.addresses.add(home);
         
-        Stringer stringer = new StringerBuilder().converter(Class.class, new ClassConverter()).bean(Person.class).bean(Address.class).getInstance();
+        Stringer stringer = new StringerBuilder().converter(Class.class, new ClassConverter()).isBean(Person.class).isBean(Address.class).getInstance();
         CollectionParser parser = new CollectionParser(stringer, false);
         
         Object diffused = new Diffuser().diffuse(person, true);
@@ -90,7 +90,7 @@ public class CollectionParserTest {
         
         person.addresses.add(home);
         
-        Stringer stringer = new StringerBuilder().converter(Class.class, new ClassConverter()).bean(Person.class).bean(Address.class).getInstance();
+        Stringer stringer = new StringerBuilder().converter(Class.class, new ClassConverter()).isBean(Person.class).isBean(Address.class).getInstance();
         CollectionParser parser = new CollectionParser(stringer, true);
         
         Map<Object, Object> diffused = new HashMap<Object, Object>(toObjectMap(new Diffuser().diffuse(person, true)));

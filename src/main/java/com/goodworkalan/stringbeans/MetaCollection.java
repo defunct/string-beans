@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.goodworkalan.reflective.ReflectiveException;
 import com.goodworkalan.reflective.ReflectiveFactory;
+import com.goodworkalan.stash.Stash;
 
 public class MetaCollection implements MetaObject {
     private final ParameterizedType collectionType;
@@ -30,7 +31,7 @@ public class MetaCollection implements MetaObject {
         ((Collection) object).add(value);
     }
     
-    public Object newInstance() {
+    public Object newStackInstance() {
         Class<?> objectClass = getObjectClass();
         if (objectClass.isInterface() || Modifier.isAbstract(objectClass.getModifiers())) {
             if (List.class.isAssignableFrom(getObjectClass())) {
@@ -50,5 +51,20 @@ public class MetaCollection implements MetaObject {
     
     public Iterable<ObjectBucket> buckets(Object object) {
         return null;
+    }
+    
+    /**
+     * Returns the given <code>object</code> since we returned a collection of
+     * the appropriate type from {@link #newStackInstance() newStackInstance}.
+     * 
+     * @param stash
+     *            A heterogeneous container of unforeseen participants in the
+     *            construction of the object.
+     * @param object
+     *            The object taken from the stack.
+     * @return The given object.
+     */
+    public Object newInstance(Stash stash, Object object) {
+        return object;
     }
 }

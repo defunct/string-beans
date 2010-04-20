@@ -13,6 +13,7 @@ public class StringBeansProject extends ProjectModule {
                 .produces(new Artifact("com.goodworkalan/string-beans/0.1"))
                 .main()
                     .depends()
+                        .artifact(new Artifact("com.github.bigeasy.stash/stash/0.1"))
                         .artifact(new Artifact("com.github.bigeasy.danger/danger/0.1"))
                         .artifact(new Artifact("com.github.bigeasy.class-association/class-association/0.1"))
                         .artifact(new Artifact("com.github.bigeasy.diffuse/diffuse/0.1"))

@@ -4,8 +4,16 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 
+import com.goodworkalan.stash.Stash;
+
 public class ObjectStack {
     private final Stringer stringer;
+
+    /**
+     * A heterogeneous container of unforeseen participants in the construction
+     * of the object.
+     */
+    private final Stash stash;
 
     private final LinkedList<MetaObject> objectInfoStack = new LinkedList<MetaObject>();
 
@@ -17,8 +25,22 @@ public class ObjectStack {
     
     private final boolean ignoreMissing;
 
-    public ObjectStack(Stringer stringer, MetaObject rootMeta, Object root, boolean ignoreMissing) {
+    /**
+     * Construct an object stack that builds an object graph starting at the
+     * given <code>root</code> object which is maniuplated using the given
+     * <code>rootMeta</code> object.
+     * 
+     * @param stringer
+     * @param stash
+     *            A heterogeneous container of unforeseen participants in the
+     *            construction of the object.
+     * @param rootMeta
+     * @param root
+     * @param ignoreMissing
+     */
+    public ObjectStack(Stringer stringer, Stash stash, MetaObject rootMeta, Object root, boolean ignoreMissing) {
         this.stringer = stringer;
+        this.stash = stash;
         this.objectInfoStack.addLast(rootMeta);
         this.objectStack.addLast(root);
         this.ignoreMissing = ignoreMissing;
@@ -34,17 +56,16 @@ public class ObjectStack {
             throw new StringBeanException(ObjectStack.class, "doesNotExist");
         } 
         if (objectClass == null) {
-            metaObject = MetaObjects.getInstance(stringer, propertyType);
+            metaObject = stringer.getMetaObject(propertyType);
         } else {
             Class<?> propertyClass = (propertyType instanceof Class<?>) ? (Class<?>) propertyType : (Class<?>) ((ParameterizedType) propertyType).getRawType();
             if (!propertyClass.isAssignableFrom(objectClass)) {
                 throw new StringBeanException(ObjectStack.class, "pushIsNotAssignableFrom");
             }
-            metaObject = MetaObjects.getInstance(stringer, objectClass);
+            metaObject = stringer.getMetaObject(objectClass);
         }
         if (!metaObject.isScalar()) {
-            Object newObject = metaObject.newInstance();
-            objectInfoStack.getLast().set(objectStack.getLast(), name, newObject);
+            Object newObject = metaObject.newStackInstance();
             objectStack.add(newObject);
         }
         nameStack.addLast(name);
@@ -85,8 +106,9 @@ public class ObjectStack {
     }
 
     public void pop() {
-        lastPopped = objectStack.removeLast();
-        objectInfoStack.removeLast();
+        MetaObject metaObject = objectInfoStack.removeLast();
+        lastPopped = metaObject.newInstance(stash, objectStack.removeLast());
+        objectInfoStack.getLast().set(objectStack.getLast(), nameStack.removeLast(), lastPopped);
     }
     
     public Object getLastPopped() {

@@ -17,8 +17,9 @@ import com.goodworkalan.reflective.Field;
 import com.goodworkalan.reflective.Method;
 import com.goodworkalan.reflective.ReflectiveException;
 import com.goodworkalan.reflective.ReflectiveFactory;
+import com.goodworkalan.stash.Stash;
 
-public class MetaBean implements MetaObject {
+public class MetaBean implements BeanConstructor {
     private final Type type;
     private final Class<?> objectClass;
     private final Set<String> names = new HashSet<String>();
@@ -58,7 +59,7 @@ public class MetaBean implements MetaObject {
         this.objectClass = objectClass;
     }
 
-    public Object newInstance() {
+    public Object newStackInstance() {
         try {
             return new ReflectiveFactory().getConstructor(objectClass).newInstance();
         } catch (ReflectiveException e) {
@@ -164,5 +165,20 @@ public class MetaBean implements MetaObject {
 
     public boolean isScalar() {
         return false;
+    }
+
+    /**
+     * Returns the given <code>object</code> since we returned a bean of the
+     * appropriate type from {@link #newStackInstance() newStackInstance}.
+     * 
+     * @param stash
+     *            A heterogeneous container of unforeseen participants in the
+     *            construction of the object.
+     * @param object
+     *            The object taken from the stack.
+     * @return The given object.
+     */
+    public Object newInstance(Stash stash, Object object) {
+        return object;
     }
 }

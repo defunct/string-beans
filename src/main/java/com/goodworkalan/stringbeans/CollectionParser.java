@@ -3,14 +3,47 @@ package com.goodworkalan.stringbeans;
 import java.util.Collection;
 import java.util.Map;
 
+import com.goodworkalan.stash.Stash;
+
 public class CollectionParser {
     private final Stringer stringer;
+
+    /**
+     * The heterogeneous container of unforeseen participants in the
+     * construction of beans in the object graph.
+     */
+    private final Stash stash;
     
     private final boolean ignoreMissing;
     
+
+    /**
+     * Construct an object stack that builds an object graph starting at the
+     * given <code>root</code> object which is maniuplated using the given
+     * <code>rootMeta</code> object.
+     * 
+     * @param stringer
+     * @param stash
+     *            A heterogeneous container of unforeseen participants in the
+     *            construction of the object.
+     * @param rootMeta
+     * @param root
+     * @param ignoreMissing
+     */
     public CollectionParser(Stringer stringer, boolean ignoreMissing) {
         this.stringer = stringer;
+        this.stash = new Stash();
         this.ignoreMissing = ignoreMissing;
+    }
+
+    /**
+     * Get the heterogeneous container of unforeseen participants in the
+     * construction of beans in the object graph.
+     * 
+     * @return The heterogeneous container of participants.
+     */
+    public Stash getStash() {
+        return stash;
     }
 
     @SuppressWarnings("unchecked")
@@ -54,6 +87,7 @@ public class CollectionParser {
             objectStack.pop();
         }
     }
+
     private void parseCollection(ObjectStack objectStack, Collection<Object> collection) {
         for (Object value : collection) {
             if (objectStack.push(null, getClassName(value))) {
@@ -73,11 +107,13 @@ public class CollectionParser {
     
     public <T> void populate(T rootObject, Map<?, ?> map) {
         if (map != null) {
-            ObjectStack objectStack = new ObjectStack(stringer, MetaObjects.getInstance(stringer, rootObject.getClass()), rootObject, ignoreMissing);
+            MetaObject metaRoot = stringer.getMetaObject(rootObject.getClass());
+            if (metaRoot.isScalar()) {
+                throw new IllegalStateException();
+            }
+            ObjectStack objectStack = new ObjectStack(stringer, stash, metaRoot, rootObject, ignoreMissing);
             parseMap(objectStack, toObjectMap(map));
-            objectStack.pop();
         }
-
     }
 
     /**
@@ -96,7 +132,7 @@ public class CollectionParser {
             return null;
         }
         Object[] bean = new Object[1];
-        ObjectStack objectStack = new ObjectStack(stringer, new MetaRoot<T>(rootClass), bean, ignoreMissing);
+        ObjectStack objectStack = new ObjectStack(stringer, stash, new MetaRoot<T>(rootClass), bean, ignoreMissing);
         objectStack.push(null, null);
         parseMap(objectStack, toObjectMap(map));
         objectStack.pop();

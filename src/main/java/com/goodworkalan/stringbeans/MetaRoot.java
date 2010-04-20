@@ -6,6 +6,7 @@ import java.util.Collections;
 import com.goodworkalan.reflective.Constructor;
 import com.goodworkalan.reflective.ReflectiveException;
 import com.goodworkalan.reflective.ReflectiveFactory;
+import com.goodworkalan.stash.Stash;
 
 public class MetaRoot<T> implements MetaObject {
     private final Constructor<T> constructor;
@@ -35,7 +36,7 @@ public class MetaRoot<T> implements MetaObject {
         return false;
     }
     
-    public Object newInstance() {
+    public Object newStackInstance() {
         try {
             return constructor.newInstance();
         } catch (ReflectiveException e) {
@@ -45,5 +46,20 @@ public class MetaRoot<T> implements MetaObject {
     
     public void set(Object object, String name, Object value) {
         ((Object[]) object)[0] = constructor.getNative().getDeclaringClass().cast(value);
+    }
+
+    /**
+     * Returns the given <code>object</code> since we returned an object of the
+     * appropriate type from {@link #newStackInstance() newStackInstance}.
+     * 
+     * @param stash
+     *            A heterogeneous container of unforeseen participants in the
+     *            construction of the object.
+     * @param object
+     *            The object taken from the stack.
+     * @return The given object.
+     */
+    public Object newInstance(Stash stash, Object object) {
+        return object;
     }
 }

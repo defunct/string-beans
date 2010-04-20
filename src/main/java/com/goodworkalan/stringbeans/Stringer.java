@@ -1,5 +1,14 @@
 package com.goodworkalan.stringbeans;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import com.goodworkalan.reflective.ReflectiveException;
+import com.goodworkalan.reflective.ReflectiveFactory;
 import com.goodworkalan.utility.ClassAssociation;
 
 /**
@@ -8,8 +17,12 @@ import com.goodworkalan.utility.ClassAssociation;
  * @author Alan Gutierrez
  */
 public class Stringer {
+    private final ReflectiveFactory reflective;
+    
     /** The set of beans that can be read or written. */
-    private final ClassAssociation<Boolean> beans;
+    private final ClassAssociation<Class<? extends MetaObject>> beans;
+    
+    private final ConcurrentMap<Class<?>, MetaObject> metaObjectCache = new ConcurrentHashMap<Class<?>, MetaObject>();
     
     /** The set of converters (need a default set). */
     private final Converter converter;
@@ -24,8 +37,9 @@ public class Stringer {
      * @param converter
      *            The object to string converter.
      */
-    public Stringer(ClassAssociation<Boolean> beans, Converter converter) {
-        this.beans = new ClassAssociation<Boolean>(beans);
+    public Stringer(ReflectiveFactory reflective, ClassAssociation<Class<? extends MetaObject>> beans, Converter converter) {
+        this.reflective = reflective;
+        this.beans = new ClassAssociation<Class<? extends MetaObject>>(beans);
         this.converter = converter;
     }
 
@@ -46,7 +60,40 @@ public class Stringer {
         if (type.isPrimitive()) {
             return false;
         }
-        return beans.get(type);
+        return BeanConstructor.class.isAssignableFrom(beans.get(type));
+    }
+    
+    public MetaObject getMetaObject(Type objectType) {
+        if (objectType instanceof ParameterizedType) {
+            Class<?> objectClass = (Class<?>) ((ParameterizedType) objectType).getRawType();
+            if (Map.class.isAssignableFrom(objectClass)) {
+                
+            } else if (Collection.class.isAssignableFrom(objectClass)) {
+                return new MetaCollection((ParameterizedType) objectType);
+            } else if (!Class.class.isAssignableFrom(objectClass)) {
+                throw new IllegalStateException();
+            }
+            objectType = objectClass;
+        } 
+        if (objectType instanceof Class<?>) {
+            Class<?> objectClass = (Class<?>) objectType;
+            MetaObject metaObject = metaObjectCache.get(objectClass);
+            if (metaObject == null) {
+                if (objectClass.isPrimitive()) {
+                    metaObject = new MetaScalar(objectClass);
+                } else {
+                    Class<? extends MetaObject> metaObjectClass = beans.get(objectClass);
+                    try {
+                        metaObject = reflective.getConstructor(metaObjectClass, Class.class).newInstance(objectClass);
+                    } catch (ReflectiveException e) {
+                        throw new StringBeanException(Stringer.class, "metaObjectCreate", metaObjectClass, objectClass);
+                    }
+                }
+                metaObjectCache.put(objectClass, metaObject);
+            }
+            return metaObject;
+        }
+        throw new IllegalStateException();
     }
 
     /**

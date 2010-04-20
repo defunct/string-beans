@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import com.goodworkalan.reflective.ReflectiveException;
 import com.goodworkalan.reflective.ReflectiveFactory;
+import com.goodworkalan.stash.Stash;
 
 public class MetaMap implements MetaObject {
     private final ParameterizedType pt;
@@ -56,7 +57,7 @@ public class MetaMap implements MetaObject {
         return false;
     }
 
-    public Object newInstance() {
+    public Object newStackInstance() {
         Class<?> mapClass = (Class<?>) pt.getRawType();
         if (!mapClass.isInterface()) {
             try {
@@ -70,8 +71,23 @@ public class MetaMap implements MetaObject {
         return new LinkedHashMap<Object, Object>();
     }
 
+    /**
+     * Returns the given <code>object</code> since we returned a map object of
+     * the appropriate type from {@link #newStackInstance() newStackInstance}.
+     * 
+     * @param stash
+     *            A heterogeneous container of unforeseen participants in the
+     *            construction of the object.
+     * @param object
+     *            The object taken from the stack.
+     * @return The given object.
+     */
+    public Object newInstance(Stash stash, Object object) {
+        return object;
+    }
+
     @SuppressWarnings("unchecked")
     public void set(Object object, String name, Object value) {
-        ((Map<Object, Object>) object).put(name, value);
+        ((Map) object).put(name, value);
     }
 }
