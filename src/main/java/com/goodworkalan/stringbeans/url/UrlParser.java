@@ -13,18 +13,17 @@ import com.goodworkalan.stringbeans.Stringer;
 public class UrlParser {
     private final CollectionParser collectionParser;
     
-    public UrlParser(Stringer stringer, boolean ignoreMissing) {
-        this.collectionParser = new CollectionParser(stringer, ignoreMissing);
+    public UrlParser(Stringer stringer) {
+        this.collectionParser = new CollectionParser(stringer, true);
     }
     
-    private static StringToObjectMap tree(Map<String, String> form) {
+    private StringToObjectMap tree(Map<String, String> form) {
         StringToObjectMap tree = new StringToObjectMap(); 
         for (Map.Entry<String, String> entry : form.entrySet()) {
             try {
                 Path path = new Path(entry.getKey(), false);
                 set(path, tree, entry.getValue(), 0);
             } catch (ParseException e) {
-                throw new StringBeanException(UrlParser.class, "path", entry.getKey(), entry.getValue());
             }
         }
         return tree;
