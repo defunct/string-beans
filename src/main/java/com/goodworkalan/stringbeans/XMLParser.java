@@ -10,7 +10,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.goodworkalan.stash.Stash;
 
-public class XMLParser extends Parser {
+public class XMLParser {
     private final Stringer stringer;
     
     private final Stash stash;
