@@ -9,7 +9,7 @@ public class StringBeansUrlProject extends ProjectModule {
     public void build(Builder builder) {
         builder
             .cookbook(JavaProject.class)
-                .produces("com.github.bigeasy.string-beans/string-beans-url/0.+1")
+                .produces("com.github.bigeasy.string-beans/string-beans-url/0.1")
                 .main()
                     .depends()
                         .include("com.github.bigeasy.string-beans/string-beans/0.+1")
