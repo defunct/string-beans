@@ -1,6 +1,6 @@
 package com.goodworkalan.stringbeans.url;
 
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.*;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -67,17 +67,11 @@ public class UrlParserTest {
         assertEquals(widget.widget.string, "Hello, World!");
     }
     
-    @Test(expectedExceptions=StringBeanException.class)
+    @Test
     public void badPath() {
-        try {
             Map<String, String> form = new LinkedHashMap<String, String>();
             form.put("#", "Hello, World!");
-            Widget widget = newUrlParser().create(Widget.class, form);
-            assertEquals(widget.widget.string, "Hello, World!");
-        } catch (StringBeanException e) {
-            assertEquals(e.getMessage(), "Unable to parse URL path: #.");
-            throw e;
-        }
+            newUrlParser().create(Widget.class, form);
     }
     
     @Test(expectedExceptions=StringBeanException.class)
@@ -89,7 +83,7 @@ public class UrlParserTest {
             Widget widget = newUrlParser().create(Widget.class, form);
             assertEquals(widget.widget.string, "Hello, World!");
         } catch (StringBeanException e) {
-            assertEquals(e.getMessage(), "Expecting container type class com.goodworkalan.stringbeans.url.StringToObjectMap but got class com.goodworkalan.stringbeans.url.SparseCollection.");
+            assertEquals(e.getMessage(), "Expecting container type com.goodworkalan.stringbeans.url.StringToObjectMap but got com.goodworkalan.stringbeans.url.SparseCollection.");
             throw e;
         }
     }
@@ -104,7 +98,7 @@ public class UrlParserTest {
             Widget widget = newUrlParser().create(Widget.class, form);
             assertEquals(widget.widget.string, "Hello, World!");
         } catch (StringBeanException e) {
-            assertEquals(e.getMessage(), "Expecting container type class com.goodworkalan.stringbeans.url.SparseCollection but got class com.goodworkalan.stringbeans.url.StringToObjectMap.");
+            assertEquals(e.getMessage(), "Expecting container type com.goodworkalan.stringbeans.url.SparseCollection but got com.goodworkalan.stringbeans.url.StringToObjectMap.");
             throw e;
         }
     }
