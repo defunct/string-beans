@@ -12,7 +12,7 @@ public class StringBeansJpaProject extends ProjectModule {
                 .produces("com.github.bigeasy.string-beans/string-beans-jpa/0.1")
                 .main()
                     .depends()
-                        .include("com.goodworkalan/string-beans/0.1")
+                        .include("com.github.bigeasy.string-beans/string-beans/0.+1")
                         .include("org.hibernate/hibernate-core/3.3.1.GA")
                         .include("org.hibernate/hibernate-annotations/3.4.0.GA")
                         .end()
