@@ -29,7 +29,7 @@ public class CollectionParserTest {
         Stringer stringer = new StringerBuilder().converter(Class.class, new ClassConverter()).isBean(Person.class).isBean(Address.class).getInstance();
         CollectionParser parser = new CollectionParser(stringer, false);
         
-        person = parser.create(Person.class, (Map<?, ?>) new Diffuser().diffuse(person, true));
+        person = parser.create(Person.class, (Map<?, ?>) new Diffuser().diffuse(person, "*"));
         
         assertEquals(person.firstName, "Alan");
         assertEquals(person.lastName, "Gutierrez");
@@ -57,7 +57,7 @@ public class CollectionParserTest {
         Stringer stringer = new StringerBuilder().converter(Class.class, new ClassConverter()).isBean(Person.class).isBean(Address.class).getInstance();
         CollectionParser parser = new CollectionParser(stringer, false);
         
-        Object diffused = new Diffuser().diffuse(person, true);
+        Object diffused = new Diffuser().diffuse(person, "*");
         person = new Person();
         
         parser.populate(person, (Map<?, ?>) diffused);
@@ -93,7 +93,7 @@ public class CollectionParserTest {
         Stringer stringer = new StringerBuilder().converter(Class.class, new ClassConverter()).isBean(Person.class).isBean(Address.class).getInstance();
         CollectionParser parser = new CollectionParser(stringer, true);
         
-        Map<Object, Object> diffused = new HashMap<Object, Object>(toObjectMap(new Diffuser().diffuse(person, true)));
+        Map<Object, Object> diffused = new HashMap<Object, Object>(toObjectMap(new Diffuser().diffuse(person, "*")));
         
         diffused.put("missing", "foo");
         
