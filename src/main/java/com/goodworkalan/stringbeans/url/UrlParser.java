@@ -2,9 +2,9 @@ package com.goodworkalan.stringbeans.url;
 
 import java.util.Map;
 
-import com.goodworkalan.infuse.ParseException;
-import com.goodworkalan.infuse.Part;
-import com.goodworkalan.infuse.Path;
+import com.goodworkalan.permeate.ParseException;
+import com.goodworkalan.permeate.Part;
+import com.goodworkalan.permeate.Path;
 import com.goodworkalan.stash.Stash;
 import com.goodworkalan.stringbeans.CollectionParser;
 import com.goodworkalan.stringbeans.StringBeanException;
