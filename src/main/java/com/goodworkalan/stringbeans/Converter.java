@@ -3,16 +3,10 @@ package com.goodworkalan.stringbeans;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
-import com.goodworkalan.reflective.ReflectiveFactory;
 
 public class Converter {
-    private final ReflectiveFactory reflectiveFactory;
-    
-    public Converter(ReflectiveFactory reflectiveFactory) {
-        this.reflectiveFactory = reflectiveFactory;
-    }
-    
     /**
      * Convert a primitive type to an Object derived type, or return the given
      * type if it is already and Object derived type.
@@ -45,17 +39,20 @@ public class Converter {
     }
     
     public Converter(){
-        this(new ReflectiveFactory());
     }
     
-    public Object fromString(Class<?> type, String string) {
+    public Object fromString(final Class<?> type, final String string) {
         if (string == null) {
             return null;
         }
         try {
-            return reflectiveFactory.getConstructor(type, String.class).newInstance(string);
+            try {
+                return type.getConstructor(String.class).newInstance(string);
+            } catch (Throwable e) {
+                throw new ReflectiveException(Reflective.encode(e), e);
+            }
         } catch (ReflectiveException e) {
-           throw new StringBeanException(Converter.class, "convert", e);
+            throw new StringBeanException(Converter.class, "convert", e);
         }
     }
 

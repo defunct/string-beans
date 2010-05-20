@@ -3,20 +3,15 @@ package com.goodworkalan.stringbeans;
 import java.lang.reflect.Type;
 import java.util.Collections;
 
-import com.goodworkalan.reflective.Constructor;
+import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
-import com.goodworkalan.reflective.ReflectiveFactory;
 import com.goodworkalan.stash.Stash;
 
 public class MetaRoot<T> implements MetaObject {
-    private final Constructor<T> constructor;
+    private final Class<T> rootClass;
     
     public MetaRoot(Class<T> rootClass) {
-        try {
-            this.constructor = new ReflectiveFactory().getConstructor(rootClass);
-        } catch (ReflectiveException e) {
-            throw new StringBeanException(MetaRoot.class, "getConstructor", e);
-        }
+        this.rootClass = rootClass;
     }
     
     public Iterable<ObjectBucket> buckets(Object object) {
@@ -29,7 +24,7 @@ public class MetaRoot<T> implements MetaObject {
     }
     
     public Type getPropertyType(String name) {
-        return constructor.getNative().getDeclaringClass();
+        return rootClass;
     }
     
     public boolean isScalar() {
@@ -38,14 +33,18 @@ public class MetaRoot<T> implements MetaObject {
     
     public Object newStackInstance() {
         try {
-            return constructor.newInstance();
+            try {
+                return rootClass.newInstance();
+            } catch (Throwable e) {
+                throw new ReflectiveException(Reflective.encode(e), e);
+            }
         } catch (ReflectiveException e) {
             throw new StringBeanException(MetaRoot.class, "newInstance", e);
         }
     }
     
     public void set(Object object, String name, Object value) {
-        ((Object[]) object)[0] = constructor.getNative().getDeclaringClass().cast(value);
+        ((Object[]) object)[0] = rootClass.cast(value);
     }
 
     /**

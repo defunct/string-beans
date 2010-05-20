@@ -4,6 +4,8 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -13,10 +15,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.goodworkalan.reflective.Field;
-import com.goodworkalan.reflective.Method;
+import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
-import com.goodworkalan.reflective.ReflectiveFactory;
 import com.goodworkalan.stash.Stash;
 
 public class MetaBean implements BeanConstructor {
@@ -41,18 +41,18 @@ public class MetaBean implements BeanConstructor {
             java.lang.reflect.Method writer = property.getWriteMethod();
             if (!(reader == null && writer == null)) {
                 if (writer != null) {
-                    writers.put(property.getName(), new Method(writer));
+                    writers.put(property.getName(), writer);
                 }
                 if (reader != null) {
                     names.add(property.getName());
-                    readers.put(property.getName(), new Method(reader));
+                    readers.put(property.getName(), reader);
                 }
             }
         }
         for (java.lang.reflect.Field field : objectClass.getFields()) {
             if (Modifier.isPublic(field.getModifiers()) && !names.contains(field.getName())) {
                 names.add(field.getName());
-                fields.put(field.getName(), new Field(field));
+                fields.put(field.getName(), field);
             }
         }
         this.type = objectClass;
@@ -61,7 +61,11 @@ public class MetaBean implements BeanConstructor {
 
     public Object newStackInstance() {
         try {
-            return new ReflectiveFactory().getConstructor(objectClass).newInstance();
+            try {
+                return objectClass.newInstance();
+            } catch (Throwable e) {
+                throw new ReflectiveException(Reflective.encode(e), e);
+            }
         } catch (ReflectiveException e) {
             throw new StringBeanException(MetaBean.class, "newInstance", e);
         }
@@ -85,14 +89,18 @@ public class MetaBean implements BeanConstructor {
                     }
 
                     public ObjectBucket next() {
-                        String name = eachName.next();
                         try {
-                            Field field = fields.get(name);
-                            if (field == null) {
-                                Method reader = readers.get(name);
-                                return new ObjectBucket(reader.getNative().getReturnType(), name, reader.invoke(object));
+                            try {
+                                String name = eachName.next();
+                                Field field = fields.get(name);
+                                if (field == null) {
+                                    Method reader = readers.get(name);
+                                    return new ObjectBucket(reader.getReturnType(), name, reader.invoke(object));
+                                }
+                                return new ObjectBucket(field.getType(),name, field.get(object));
+                            } catch (Throwable e) {
+                                throw new ReflectiveException(Reflective.encode(e), e);
                             }
-                            return new ObjectBucket(field.getNative().getType(),name, field.get(object));
                         } catch (ReflectiveException e) {
                             throw new StringBeanException(MetaBean.class, "nextBucket", e);
                         }
@@ -114,9 +122,9 @@ public class MetaBean implements BeanConstructor {
         Field field = fields.get(name);
         if (field == null) {
             Method reader = readers.get(name);
-            return reader.getNative().getReturnType();
+            return reader.getReturnType();
         }
-        return field.getNative().getType();
+        return field.getType();
     }
 
     public Type getPropertyType(String name) {
@@ -128,23 +136,27 @@ public class MetaBean implements BeanConstructor {
                 if (writer == null) {
                     return null;
                 }
-                return writer.getNative().getGenericParameterTypes()[0];
+                return writer.getGenericParameterTypes()[0];
             }
-            return reader.getNative().getGenericReturnType();
+            return reader.getGenericReturnType();
         }
-        return field.getNative().getGenericType();
+        return field.getGenericType();
     }
 
     public void set(Object object, String name, Object value) {
-        try {
-            Field field = fields.get(name);
-            if (field == null) {
-                Method writer = writers.get(name);
-                if (writer != null) {
-                    writer.invoke(object, value);
+     try {
+            try {
+                Field field = fields.get(name);
+                if (field == null) {
+                    Method writer = writers.get(name);
+                    if (writer != null) {
+                        writer.invoke(object, value);
+                    }
+                } else {
+                    field.set(object, value);
                 }
-            } else {
-                field.set(object, value);
+            } catch (Throwable e) {
+                throw new ReflectiveException(Reflective.encode(e), e);
             }
         } catch (ReflectiveException e) {
             throw new StringBeanException(MetaBean.class, "fieldSet", e);
@@ -153,11 +165,15 @@ public class MetaBean implements BeanConstructor {
 
     public Object get(Object object, String name) {
         try {
-            Field field = fields.get(name);
-            if (field == null) {
-                return readers.get(name).invoke(object);
+            try {
+                Field field = fields.get(name);
+                if (field == null) {
+                    return readers.get(name).invoke(object);
+                }
+                return field.get(object);
+            } catch (Throwable e) {
+                throw new ReflectiveException(Reflective.encode(e), e);
             }
-            return field.get(object);
         } catch (ReflectiveException e) {
             throw new StringBeanException(MetaBean.class, "fieldGet", e);
         }

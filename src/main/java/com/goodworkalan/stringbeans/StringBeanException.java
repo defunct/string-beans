@@ -5,8 +5,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.goodworkalan.danger.ContextualDanger;
 
-@SuppressWarnings("serial")
 public class StringBeanException extends ContextualDanger {
+    /** The serial version id. */
+    private static final long serialVersionUID = 1L;
+
     /** A cache of resource bundles. */
     private final static ConcurrentHashMap<String, ResourceBundle> bundles = new ConcurrentHashMap<String, ResourceBundle>();
 

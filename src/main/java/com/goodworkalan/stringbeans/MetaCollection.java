@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
-import com.goodworkalan.reflective.ReflectiveFactory;
 import com.goodworkalan.stash.Stash;
 
 public class MetaCollection implements MetaObject {
@@ -38,10 +38,15 @@ public class MetaCollection implements MetaObject {
                 objectClass = ArrayList.class;
             }
         }
+        Class<?> createClass = objectClass;
         try {
-            return new ReflectiveFactory().getConstructor(objectClass).newInstance();
+            try {
+                return createClass.newInstance();
+            } catch (Throwable e) {
+                throw new ReflectiveException(Reflective.encode(e), e);
+            }
         } catch (ReflectiveException e) {
-            throw new StringBeanException(MetaCollection.class, "newInstance");
+            throw new StringBeanException(MetaCollection.class, "newInstance", e);
         }
     }
     

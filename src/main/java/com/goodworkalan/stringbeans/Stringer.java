@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
-import com.goodworkalan.reflective.ReflectiveFactory;
 import com.goodworkalan.utility.ClassAssociation;
 
 /**
@@ -17,8 +17,6 @@ import com.goodworkalan.utility.ClassAssociation;
  * @author Alan Gutierrez
  */
 public class Stringer {
-    private final ReflectiveFactory reflective;
-    
     /** The set of beans that can be read or written. */
     private final ClassAssociation<Class<? extends MetaObject>> beans;
     
@@ -37,8 +35,7 @@ public class Stringer {
      * @param converter
      *            The object to string converter.
      */
-    public Stringer(ReflectiveFactory reflective, ClassAssociation<Class<? extends MetaObject>> beans, Converter converter) {
-        this.reflective = reflective;
+    public Stringer(ClassAssociation<Class<? extends MetaObject>> beans, Converter converter) {
         this.beans = new ClassAssociation<Class<? extends MetaObject>>(beans);
         this.converter = converter;
     }
@@ -76,7 +73,7 @@ public class Stringer {
             objectType = objectClass;
         } 
         if (objectType instanceof Class<?>) {
-            Class<?> objectClass = (Class<?>) objectType;
+            final Class<?> objectClass = (Class<?>) objectType;
             MetaObject metaObject = metaObjectCache.get(objectClass);
             if (metaObject == null) {
                 if (objectClass.isPrimitive()) {
@@ -84,9 +81,13 @@ public class Stringer {
                 } else {
                     Class<? extends MetaObject> metaObjectClass = beans.get(objectClass);
                     try {
-                        metaObject = reflective.getConstructor(metaObjectClass, Class.class).newInstance(objectClass);
+                        try {
+                            metaObject = metaObjectClass.getConstructor(Class.class).newInstance(objectClass);
+                        } catch (Throwable e) {
+                            throw new ReflectiveException(Reflective.encode(e), e);
+                        }
                     } catch (ReflectiveException e) {
-                        throw new StringBeanException(Stringer.class, "metaObjectCreate", metaObjectClass, objectClass);
+                        throw new StringBeanException(Stringer.class, "metaObjectCreate", e, metaObjectClass, objectClass);
                     }
                 }
                 metaObjectCache.put(objectClass, metaObject);

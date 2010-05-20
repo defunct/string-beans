@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.goodworkalan.reflective.ReflectiveFactory;
 import com.goodworkalan.utility.ClassAssociation;
 
 /**
@@ -14,19 +13,12 @@ import com.goodworkalan.utility.ClassAssociation;
  * @author Alan Gutierrez
  */
 public class StringerBuilder {
-    private final ReflectiveFactory reflective;
-
     /** The set of beans that can be read or written. */
     private final ClassAssociation<Class<? extends MetaObject>> beans = new ClassAssociation<Class<? extends MetaObject>>();
 
     private final Map<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
 
     public StringerBuilder() {
-        this(new ReflectiveFactory());
-    }
-    
-    StringerBuilder(ReflectiveFactory reflective) {
-        this.reflective = reflective;
     }
 
     /**
@@ -76,6 +68,6 @@ public class StringerBuilder {
 
     public Stringer getInstance() {
         beans.assignable(Object.class, MetaScalar.class);
-        return new Stringer(reflective, beans, new ConverterMap(converters));
+        return new Stringer(beans, new ConverterMap(converters));
     }
 }

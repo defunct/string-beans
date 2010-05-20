@@ -3,23 +3,20 @@ package com.goodworkalan.stringbeans;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
-import com.goodworkalan.reflective.ReflectiveFactory;
 import com.goodworkalan.stash.Stash;
 
 public class MetaMap implements MetaObject {
     private final ParameterizedType pt;
     
-    private final ReflectiveFactory reflectiveFactory;
-
-    public MetaMap(ReflectiveFactory reflectiveFactory, ParameterizedType pt) {
-        this.reflectiveFactory =reflectiveFactory;
+    public MetaMap(ParameterizedType pt) {
         this.pt = pt;
     }
 
@@ -61,7 +58,11 @@ public class MetaMap implements MetaObject {
         Class<?> mapClass = (Class<?>) pt.getRawType();
         if (!mapClass.isInterface()) {
             try {
-                return reflectiveFactory.newInstance(mapClass);
+                try {
+                    return mapClass.newInstance();
+                } catch (Throwable e) {
+                    throw new ReflectiveException(Reflective.encode(e), e);
+                }
             } catch (ReflectiveException e) {
                 throw new StringBeanException(MetaMap.class, "newInstance", e);
             }
