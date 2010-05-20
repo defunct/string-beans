@@ -19,7 +19,7 @@ public class StringBeansProject implements ProjectModule {
     public void build(Builder builder) {
         builder
             .cookbook(JavaProject.class)
-                .produces("com.github.bigeasy.string-beans/string-beans/0.1.0.1")
+                .produces("com.github.bigeasy.string-beans/string-beans/0.1.0.2")
                 .depends()
                     .production("com.github.bigeasy.stash/stash/0.+1")
                     .production("com.github.bigeasy.danger/danger/0.+1")
