@@ -6,7 +6,7 @@ import java.util.Map;
 import com.goodworkalan.stash.Stash;
 
 public class CollectionParser {
-    private final Converter stringer;
+    private final Converter converter;
 
     /**
      * The heterogeneous container of unforeseen participants in the
@@ -31,7 +31,7 @@ public class CollectionParser {
      * @param ignoreMissing
      */
     public CollectionParser(Converter stringer, boolean ignoreMissing) {
-        this.stringer = stringer;
+        this.converter = stringer;
         this.stash = new Stash();
         this.ignoreMissing = ignoreMissing;
     }
@@ -107,11 +107,11 @@ public class CollectionParser {
     
     public <T> void populate(T rootObject, Map<?, ?> map) {
         if (map != null) {
-            MetaObject metaRoot = stringer.getMetaObject(rootObject.getClass());
+            MetaObject metaRoot = converter.getMetaObject(rootObject.getClass());
             if (metaRoot.isScalar()) {
                 throw new IllegalStateException();
             }
-            ObjectStack objectStack = new ObjectStack(stringer, stash, metaRoot, rootObject, ignoreMissing);
+            ObjectStack objectStack = new ObjectStack(converter, stash, metaRoot, rootObject, ignoreMissing);
             parseMap(objectStack, toObjectMap(map));
         }
     }
@@ -132,7 +132,7 @@ public class CollectionParser {
             return null;
         }
         Object[] bean = new Object[1];
-        ObjectStack objectStack = new ObjectStack(stringer, stash, new MetaRoot<T>(rootClass), bean, ignoreMissing);
+        ObjectStack objectStack = new ObjectStack(converter, stash, new MetaRoot<T>(rootClass), bean, ignoreMissing);
         objectStack.push(null, null);
         parseMap(objectStack, toObjectMap(map));
         objectStack.pop();
