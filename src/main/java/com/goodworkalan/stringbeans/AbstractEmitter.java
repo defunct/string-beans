@@ -34,7 +34,7 @@ public abstract class AbstractEmitter {
             if (object instanceof Class<?>) {
                 object = ((Class<?>) object).getCanonicalName();
             }
-            emitScalar(object.getClass(), stringer.getConverter().toString(object));
+            emitScalar(object.getClass(), stringer.toString(object));
         }
     }
 }

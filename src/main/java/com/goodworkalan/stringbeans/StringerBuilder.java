@@ -1,9 +1,9 @@
 package com.goodworkalan.stringbeans;
 
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.Map;
 
+import com.goodworkalan.diffuse.Diffuser;
+import com.goodworkalan.infuse.Infuser;
 import com.goodworkalan.utility.ClassAssociation;
 
 /**
@@ -16,8 +16,15 @@ public class StringerBuilder {
     /** The set of beans that can be read or written. */
     private final ClassAssociation<Class<? extends MetaObject>> beans = new ClassAssociation<Class<? extends MetaObject>>();
 
-    private final Map<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
+    /** The set of object to diffused object conversion strategies. */
+    public final Diffuser diffuser = new Diffuser();
 
+    /** The set of string to object conversion strategies. */
+    public final Infuser infuser = new Infuser();
+
+    /**
+     * Create a new String Beans configuration builder.
+     */
     public StringerBuilder() {
     }
 
@@ -61,13 +68,8 @@ public class StringerBuilder {
         return this;
     }
 
-    public StringerBuilder converter(Class<?> type, Converter converter) {
-        converters.put(type, converter);
-        return this;
-    }
-
     public Stringer getInstance() {
         beans.assignable(Object.class, MetaScalar.class);
-        return new Stringer(beans, new ConverterMap(converters));
+        return new Stringer(beans, new Diffuser(diffuser), new Infuser(infuser));
     }
 }

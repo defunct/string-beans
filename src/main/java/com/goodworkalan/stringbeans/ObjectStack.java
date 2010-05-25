@@ -15,7 +15,7 @@ public class ObjectStack {
      */
     private final Stash stash;
 
-    private final LinkedList<MetaObject> objectInfoStack = new LinkedList<MetaObject>();
+    private final LinkedList<MetaObject> metaObjectStack = new LinkedList<MetaObject>();
 
     private Object lastPopped;
 
@@ -41,14 +41,14 @@ public class ObjectStack {
     public ObjectStack(Stringer stringer, Stash stash, MetaObject rootMeta, Object root, boolean ignoreMissing) {
         this.stringer = stringer;
         this.stash = stash;
-        this.objectInfoStack.addLast(rootMeta);
+        this.metaObjectStack.addLast(rootMeta);
         this.objectStack.addLast(root);
         this.ignoreMissing = ignoreMissing;
     }
     
     private boolean push(String name, Class<?> objectClass) {
         MetaObject metaObject;
-        Type propertyType = objectInfoStack.getLast().getPropertyType(name);
+        Type propertyType = metaObjectStack.getLast().getPropertyType(name);
         if (propertyType == null) {
             if (ignoreMissing) {
                 return false;
@@ -69,7 +69,7 @@ public class ObjectStack {
             objectStack.add(newObject);
         }
         nameStack.addLast(name);
-        objectInfoStack.add(metaObject);
+        metaObjectStack.add(metaObject);
         lastPopped = null;
         return true;
     }
@@ -82,7 +82,7 @@ public class ObjectStack {
     }
 
     public boolean isScalar() {
-        return objectInfoStack.getLast().isScalar();
+        return metaObjectStack.getLast().isScalar();
     }
 
     Class<?> forName(String className) {
@@ -98,17 +98,17 @@ public class ObjectStack {
     }
 
     public void pop(String string) {
-        MetaObject scalar = objectInfoStack.removeLast();
+        MetaObject scalar = metaObjectStack.removeLast();
         String pushedName = nameStack.removeLast();
-        Object value = stringer.getConverter().fromString(scalar.getObjectClass(), string);
-        objectInfoStack.getLast().set(objectStack.getLast(), pushedName, value);
+        Object value = stringer.fromString(scalar.getObjectClass(), string);
+        metaObjectStack.getLast().set(objectStack.getLast(), pushedName, value);
         lastPopped = value;
     }
 
     public void pop() {
-        MetaObject metaObject = objectInfoStack.removeLast();
+        MetaObject metaObject = metaObjectStack.removeLast();
         lastPopped = metaObject.newInstance(stash, objectStack.removeLast());
-        objectInfoStack.getLast().set(objectStack.getLast(), nameStack.removeLast(), lastPopped);
+        metaObjectStack.getLast().set(objectStack.getLast(), nameStack.removeLast(), lastPopped);
     }
     
     public Object getLastPopped() {

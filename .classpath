@@ -5,6 +5,8 @@
   <classpathentry excluding="**/*.java" kind="src" path="src/main/resources"/>
   <classpathentry excluding="**/*.java" kind="src" output="target/test-classes" path="src/test/resources"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/class-boxer"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/infuse"/>
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="var" path="M2_REPO/org/testng/testng-jdk15/5.10/testng-jdk15-5.10.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/mockito/mockito-core/1.6/mockito-core-1.6.jar"/>
@@ -23,9 +25,9 @@
       <attribute name="javadoc_location" value="jar:file:/Users/alan/.m2/repository/com/github/bigeasy/class-association/class-association/0.1/class-association-0.1-javadoc.jar!/"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/com/github/bigeasy/diffuse/diffuse/0.1.0.2/diffuse-0.1.0.2.jar" sourcepath="M2_REPO/com/github/bigeasy/diffuse/diffuse/0.1.0.2/diffuse-0.1.0.2-sources.jar">
+  <classpathentry kind="var" path="M2_REPO/com/github/bigeasy/diffuse/diffuse/0.1.0.3/diffuse-0.1.0.3.jar" sourcepath="M2_REPO/com/github/bigeasy/diffuse/diffuse/0.1.0.3/diffuse-0.1.0.3-sources.jar">
     <attributes>
-      <attribute name="javadoc_location" value="jar:file:/Users/alan/.m2/repository/com/github/bigeasy/diffuse/diffuse/0.1.0.2/diffuse-0.1.0.2-javadoc.jar!/"/>
+      <attribute name="javadoc_location" value="jar:file:/Users/alan/.m2/repository/com/github/bigeasy/diffuse/diffuse/0.1.0.3/diffuse-0.1.0.3-javadoc.jar!/"/>
     </attributes>
   </classpathentry>
   <classpathentry kind="var" path="M2_REPO/com/github/bigeasy/reflective/reflective/0.5/reflective-0.5.jar" sourcepath="M2_REPO/com/github/bigeasy/reflective/reflective/0.5/reflective-0.5-sources.jar">

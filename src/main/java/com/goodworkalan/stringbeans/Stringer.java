@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.goodworkalan.diffuse.Diffuser;
+import com.goodworkalan.infuse.Infuser;
 import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
 import com.goodworkalan.utility.ClassAssociation;
@@ -23,7 +25,9 @@ public class Stringer {
     private final ConcurrentMap<Class<?>, MetaObject> metaObjectCache = new ConcurrentHashMap<Class<?>, MetaObject>();
     
     /** The set of converters (need a default set). */
-    private final Converter converter;
+    private final Infuser infuser;
+    
+    private final Diffuser diffuser;
 
     /**
      * Create string beans configuration that will treat the given set of
@@ -32,12 +36,43 @@ public class Stringer {
      * 
      * @param beans
      *            The set of classes that are beans.
-     * @param converter
+     * @param Infuser
      *            The object to string converter.
      */
-    public Stringer(ClassAssociation<Class<? extends MetaObject>> beans, Converter converter) {
+    public Stringer(ClassAssociation<Class<? extends MetaObject>> beans, Diffuser diffuser,  Infuser infuser) {
         this.beans = new ClassAssociation<Class<? extends MetaObject>>(beans);
-        this.converter = converter;
+        this.diffuser = diffuser;
+        this.infuser = infuser;
+    }
+
+    /**
+     * Convert the given <code>object</code> to a string using the infuser.
+     * 
+     * @param type
+     *            The type to create.
+     * @param string
+     *            The string to convert.
+     * @return An object of the given type.
+     */
+    public Object fromString(Class<?> type, String string) {
+        if (string == null) {
+            return null;
+        }
+        return infuser.getInfuser(type).infuse(string);
+    }
+
+    /**
+     * Convert the given <code>object</code> to a string.
+     * 
+     * @param object
+     *            The object to convert to a string.
+     * @return The converted string.
+     */
+    public String toString(Object object) {
+        if (object == null) {
+            return null;
+        }
+        return diffuser.diffuse(object).toString();
     }
 
     /**
@@ -95,14 +130,5 @@ public class Stringer {
             return metaObject;
         }
         throw new IllegalStateException();
-    }
-
-    /**
-     * Get the converter used to convert objects into strings.
-     * 
-     * @return The converter.
-     */
-    public Converter getConverter() {
-        return converter;
     }
 }

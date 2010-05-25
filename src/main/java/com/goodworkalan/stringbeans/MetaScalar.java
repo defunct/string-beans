@@ -3,12 +3,13 @@ package com.goodworkalan.stringbeans;
 import java.lang.reflect.Type;
 
 import com.goodworkalan.stash.Stash;
+import com.goodworkalan.utility.Primitives;
 
 public class MetaScalar implements MetaObject {
     private final Class<?> objectClass;
 
     public MetaScalar(Class<?> objectClass) {
-        this.objectClass = Converter.box(objectClass);
+        this.objectClass = Primitives.box(objectClass);
     }
 
     public Iterable<ObjectBucket> buckets(Object object) {
