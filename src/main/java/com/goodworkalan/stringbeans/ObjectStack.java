@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import com.goodworkalan.stash.Stash;
 
 public class ObjectStack {
-    private final Stringer stringer;
+    private final Converter stringer;
 
     /**
      * A heterogeneous container of unforeseen participants in the construction
@@ -15,14 +15,22 @@ public class ObjectStack {
      */
     private final Stash stash;
 
+    /** The stack of meta objects. */
     private final LinkedList<MetaObject> metaObjectStack = new LinkedList<MetaObject>();
 
+    /** The last object popped from the object stack. */
     private Object lastPopped;
 
+    /** The stack of objects. */
     private final LinkedList<Object> objectStack = new LinkedList<Object>();
     
+    /** The stack of names. */
     private final LinkedList<String> nameStack = new LinkedList<String>();
     
+    /**
+     * Whether to ignore names that are missing in the object currently being
+     * populated by the object stack.
+     */
     private final boolean ignoreMissing;
 
     /**
@@ -38,7 +46,7 @@ public class ObjectStack {
      * @param root
      * @param ignoreMissing
      */
-    public ObjectStack(Stringer stringer, Stash stash, MetaObject rootMeta, Object root, boolean ignoreMissing) {
+    public ObjectStack(Converter stringer, Stash stash, MetaObject rootMeta, Object root, boolean ignoreMissing) {
         this.stringer = stringer;
         this.stash = stash;
         this.metaObjectStack.addLast(rootMeta);

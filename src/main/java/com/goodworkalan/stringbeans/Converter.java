@@ -1,5 +1,6 @@
 package com.goodworkalan.stringbeans;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -18,31 +19,27 @@ import com.goodworkalan.utility.ClassAssociation;
  *
  * @author Alan Gutierrez
  */
-public class Stringer {
+public class Converter {
     /** The set of beans that can be read or written. */
     private final ClassAssociation<Class<? extends MetaObject>> beans;
     
     private final ConcurrentMap<Class<?>, MetaObject> metaObjectCache = new ConcurrentHashMap<Class<?>, MetaObject>();
     
     /** The set of converters (need a default set). */
-    private final Infuser infuser;
+    public final Infuser infuser;
     
-    private final Diffuser diffuser;
+    public final Diffuser diffuser;
 
-    /**
-     * Create string beans configuration that will treat the given set of
-     * classes as beans to serialize and use the given converter to convert all
-     * other classes to strings.
-     * 
-     * @param beans
-     *            The set of classes that are beans.
-     * @param Infuser
-     *            The object to string converter.
-     */
-    public Stringer(ClassAssociation<Class<? extends MetaObject>> beans, Diffuser diffuser,  Infuser infuser) {
-        this.beans = new ClassAssociation<Class<? extends MetaObject>>(beans);
-        this.diffuser = diffuser;
-        this.infuser = infuser;
+    public Converter(Converter converter)  {
+        this.beans = new ClassAssociation<Class<? extends MetaObject>>(converter.beans);
+        this.diffuser = new Diffuser(converter.diffuser);
+        this.infuser = new Infuser(converter.infuser);
+    }
+        
+    public Converter() {
+        this.beans = new ClassAssociation<Class<? extends MetaObject>>();
+        this.diffuser = new Diffuser();
+        this.infuser = new Infuser();
     }
 
     /**
@@ -122,7 +119,7 @@ public class Stringer {
                             throw new ReflectiveException(Reflective.encode(e), e);
                         }
                     } catch (ReflectiveException e) {
-                        throw new StringBeanException(Stringer.class, "metaObjectCreate", e, metaObjectClass, objectClass);
+                        throw new StringBeanException(Converter.class, "metaObjectCreate", e, metaObjectClass, objectClass);
                     }
                 }
                 metaObjectCache.put(objectClass, metaObject);
@@ -130,5 +127,39 @@ public class Stringer {
             return metaObject;
         }
         throw new IllegalStateException();
+    }
+    
+    /**
+     * Treat the given <code>type</code> as a Java Bean, writing out fields and
+     * bean properties as named values.
+     * 
+     * @param type
+     *            The bean type.
+     * @return This builder to continue configuration.
+     */
+    public void setBean(Class<?> type) {
+        beans.exact(type, MetaBean.class);
+    }
+
+    public void setBean(Class<?> type, Class<? extends BeanConstructor> meta) {
+        beans.exact(type, meta);
+    }
+
+    public void setBeanIfAssignableTo(Class<?> type) {
+        beans.assignable(type, MetaBean.class);
+    }
+
+
+    public void setBeanIfAssignableTo(Class<?> type, Class<? extends BeanConstructor> meta) {
+        beans.assignable(type, meta);
+    }
+
+
+    public void setBeanIfAnnotatedWith(Class<? extends Annotation> annotation) {
+        beans.annotated(annotation, MetaBean.class);
+    }
+
+    public void setBeanIfAnnotatedWith(Class<? extends Annotation> annotation, Class<? extends BeanConstructor> meta) {
+        beans.annotated(annotation, meta);
     }
 }

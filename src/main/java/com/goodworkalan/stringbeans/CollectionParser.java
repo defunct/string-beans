@@ -6,7 +6,7 @@ import java.util.Map;
 import com.goodworkalan.stash.Stash;
 
 public class CollectionParser {
-    private final Stringer stringer;
+    private final Converter stringer;
 
     /**
      * The heterogeneous container of unforeseen participants in the
@@ -30,7 +30,7 @@ public class CollectionParser {
      * @param root
      * @param ignoreMissing
      */
-    public CollectionParser(Stringer stringer, boolean ignoreMissing) {
+    public CollectionParser(Converter stringer, boolean ignoreMissing) {
         this.stringer = stringer;
         this.stash = new Stash();
         this.ignoreMissing = ignoreMissing;

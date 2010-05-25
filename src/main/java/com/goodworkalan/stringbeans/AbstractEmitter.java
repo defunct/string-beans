@@ -3,10 +3,24 @@ package com.goodworkalan.stringbeans;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * Navigates a object tree and invokes an appropriate method to emit a an object
+ * tree member.
+ * 
+ * @author Alan Gutierrez
+ */
 public abstract class AbstractEmitter {
-    private final Stringer stringer;
+    /** The conversion configuration. */
+    private final Converter stringer;
     
-    public AbstractEmitter(Stringer stringer) {
+    /**
+     * Create a new <code>AbstractEmitter</code> with the given conversion
+     * definition.
+     * 
+     * @param stringer
+     *            The conversion definition.
+     */
+    public AbstractEmitter(Converter stringer) {
         this.stringer = stringer;
     }
 
@@ -30,10 +44,6 @@ public abstract class AbstractEmitter {
         } else if (stringer.isBean(object.getClass()))  {
             emitBean(object.getClass(), new MetaBean(object.getClass()), object);
         } else {
-            // FIXME See http://bigeasy.lighthouseapp.com/projects/45005/tickets/18
-            if (object instanceof Class<?>) {
-                object = ((Class<?>) object).getCanonicalName();
-            }
             emitScalar(object.getClass(), stringer.toString(object));
         }
     }
