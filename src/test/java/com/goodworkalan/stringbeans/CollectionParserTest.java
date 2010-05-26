@@ -96,6 +96,7 @@ public class CollectionParserTest {
         
         Converter converter = new Converter();
         converter.setBean(Address.class);
+        converter.setBean(Person.class);
         CollectionParser parser = new CollectionParser(converter, true);
         
         Map<Object, Object> diffused = new HashMap<Object, Object>(toObjectMap(new Diffuser().diffuse(person, "*")));

@@ -38,6 +38,7 @@ public class Converter {
         
     public Converter() {
         this.beans = new ClassAssociation<Class<? extends MetaObject>>();
+        this.beans.assignable(Object.class, MetaScalar.class);
         this.diffuser = new Diffuser();
         this.infuser = new Infuser();
     }
