@@ -6,6 +6,7 @@ import java.util.Map;
 import com.goodworkalan.stash.Stash;
 
 public class CollectionParser {
+    /** The conversion strategies. */
     private final Converter converter;
 
     /**
@@ -70,7 +71,7 @@ public class CollectionParser {
         } else if (objectStack.isScalar()) {
             objectStack.pop(value.toString());
         } else {
-            Object object = objectStack.getTop();
+            Object object = objectStack.getLastContainerPushed();
             if (object instanceof Collection<?>) {
                 if (value instanceof Collection<?>) {
                     parseCollection(objectStack, toObjectCollection(value));

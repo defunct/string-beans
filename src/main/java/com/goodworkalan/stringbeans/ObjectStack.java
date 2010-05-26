@@ -6,8 +6,30 @@ import java.util.LinkedList;
 
 import com.goodworkalan.stash.Stash;
 
+/**
+ * Builds an object tree by pushing elements onto and popping them from a stack
+ * that represents the state of the tree during an in order traversal of of a
+ * diffused object tree or the parsing of a serialized tree. The stack builds an
+ * infused tree by traversing a diffused or serialized tree and pushing the
+ * types and names of the objects encountered onto the stack, then popping them
+ * from the stack when their child elements, if any, have been pushed and
+ * popped.
+ * <p>
+ * The {@link CollectionParser} uses this object stack to build an infused
+ * object tree from a diffused object tree, by navigating the diffused tree and
+ * pushing and popping the names and serialized types of the objects onto and
+ * off of this stack.
+ * <p>
+ * Parsers can use this stack to build an infused tree from a diffused or
+ * serialized tree. The XML parser is an example of a parser that maps the
+ * starting and ending of elements to the pushing and popping of names and types
+ * onto and and off of this stack.
+ * 
+ * @author Alan Gutierrez
+ */
 public class ObjectStack {
-    private final Converter stringer;
+    /** The conversion strategies. */
+    private final Converter converter;
 
     /**
      * A heterogeneous container of unforeseen participants in the construction
@@ -38,7 +60,8 @@ public class ObjectStack {
      * given <code>root</code> object which is maniuplated using the given
      * <code>rootMeta</code> object.
      * 
-     * @param stringer
+     * @param converter
+     *            The conversion strategies.
      * @param stash
      *            A heterogeneous container of unforeseen participants in the
      *            construction of the object.
@@ -46,15 +69,34 @@ public class ObjectStack {
      * @param root
      * @param ignoreMissing
      */
-    public ObjectStack(Converter stringer, Stash stash, MetaObject rootMeta, Object root, boolean ignoreMissing) {
-        this.stringer = stringer;
+    public ObjectStack(Converter converter, Stash stash, MetaObject rootMeta, Object root, boolean ignoreMissing) {
+        this.converter = converter;
         this.stash = stash;
         this.metaObjectStack.addLast(rootMeta);
         this.objectStack.addLast(root);
         this.ignoreMissing = ignoreMissing;
     }
-    
-    private boolean push(String name, Class<?> objectClass) {
+
+    /**
+     * Push an object onto the stack of the given <code>type</code> that will be
+     * assigned to the property in the parent object with the given
+     * <code>name</code>. The <code>name</code> can be null if this is the root
+     * object or if the parent element is a collection. The <code>type</code>
+     * can be null if the type can be determined by reflecting upon the parent
+     * object.
+     * 
+     * @param name
+     *            The property name or <code>null</code> if this is the root of
+     *            the object tree or the parent is a collection.
+     * @param type
+     *            The type of the object to push onto the stack or null if the
+     *            type can be determined by reflecting upon the parent.
+     * @return <code>true</code> if the object is actually pushed onto the
+     *         stack, <code>false</code> if the property cannot be found in the
+     *         parent and this <code>ObjectStack</code> is configured to ignore
+     *         missing properties.
+     */
+    private boolean push(String name, Class<?> type) {
         MetaObject metaObject;
         Type propertyType = metaObjectStack.getLast().getPropertyType(name);
         if (propertyType == null) {
@@ -63,14 +105,16 @@ public class ObjectStack {
             }
             throw new StringBeanException(ObjectStack.class, "doesNotExist");
         } 
-        if (objectClass == null) {
-            metaObject = stringer.getMetaObject(propertyType);
+        if (type == null) {
+            metaObject = converter.getMetaObject(propertyType);
         } else {
-            Class<?> propertyClass = (propertyType instanceof Class<?>) ? (Class<?>) propertyType : (Class<?>) ((ParameterizedType) propertyType).getRawType();
-            if (!propertyClass.isAssignableFrom(objectClass)) {
+            Class<?> propertyClass = (propertyType instanceof Class<?>)
+                                   ? (Class<?>) propertyType
+                                   : (Class<?>) ((ParameterizedType) propertyType).getRawType();
+            if (!propertyClass.isAssignableFrom(type)) {
                 throw new StringBeanException(ObjectStack.class, "pushIsNotAssignableFrom");
             }
-            metaObject = stringer.getMetaObject(objectClass);
+            metaObject = converter.getMetaObject(type);
         }
         if (!metaObject.isScalar()) {
             Object newObject = metaObject.newStackInstance();
@@ -81,7 +125,50 @@ public class ObjectStack {
         lastPopped = null;
         return true;
     }
- 
+
+    /**
+     * Push a <code>MetaObject</code> for an object of the given
+     * <code>className</code> onto the stack that will be assigned to property
+     * with the given <code>name</code> in the parent object. Both the
+     * <code>name</code> and <code>className</code> can be null.
+     * <p>
+     * If the type of object is a scalar object, the name and
+     * <code>MetaObject</code> for the scalar object are added to the stack. The
+     * actual scalar object is created by calling the <code>String</code>
+     * argument version of the {@link #pop(String) pop} method.
+     * <p>
+     * If the type of object is a container object, a map, list or bean, the
+     * <code>MetaObject</code> will create a new object on the object stack to
+     * collect the properties. If the object is a list, it will create a list.
+     * If it is a map or a bean, it will create a map, since actual bean object
+     * will only be created when the <code>MetaObject</code> is popped.
+     * <p>
+     * By creating beans only when the bean is popped, we give the
+     * <code>MetaObject</code> an opportunity to create the bean based on the
+     * bean properties. For example, this is used by <code>UpaMetaBean</code> in
+     * the String Beans JPA library to extract the bean from a database using
+     * bean properties as database keys, if the bean already exists in a
+     * database.
+     * <p>
+     * The <code>name</code> can be null for the root object in the stack or for
+     * objects that are elements in a collection. The <code>className</code> can
+     * be null when the class of the property can be determined by the
+     * <code>MetaObject</code> implementations introspection of the
+     * <code>Object</code>. That is, the <code>className</code> can be null if
+     * the type can be determined through reflection on the parent
+     * <code>Object</code>.
+     * 
+     * @param name
+     *            The property name or <code>null</code> if this is the root of
+     *            the object tree or the parent is a collection.
+     * @param type
+     *            The type of the object to push onto the stack or null if the
+     *            type can be determined by reflecting upon the parent.
+     * @return <code>true</code> if the object is actually pushed onto the
+     *         stack, <code>false</code> if the property cannot be found in the
+     *         parent and this <code>ObjectStack</code> is configured to ignore
+     *         missing properties.
+     */
     public boolean push(String name, String className) {
         if (className == null) {
             return push(name, (Class<?>) null);
@@ -89,36 +176,70 @@ public class ObjectStack {
         return push(name, forName(className));
     }
 
+    /**
+     * Get whether or not the type of the last object pushed onto the stack is a
+     * scalar, that is if the type of the last object pushed onto the stack will
+     * be converted from a <code>String</code> or primitive type.
+     * 
+     * @return <code>true</code> if the last object pushed onto the stack is a
+     *         scalar.
+     */
     public boolean isScalar() {
         return metaObjectStack.getLast().isScalar();
     }
 
+    /**
+     * Load the class with the given <code>className</code>.
+     * 
+     * @param className
+     *            The class name.
+     * @return The class.
+     * @exception StringBeanException
+     *                If the class named by the given <code>className</code>
+     *                cannot be found.
+     */
     Class<?> forName(String className) {
         try {
+            // FIXME No! Use the current thread class loader.
             return Class.forName(className);
         } catch (ClassNotFoundException e) {
             throw new StringBeanException(ObjectStack.class, "forName", e);
         }
     }
     
-    public Object getTop() {
+    /**
+     * Get the last container object, a map, list or  pushed onto the stack, or 
+     * @return
+     */
+    public Object getLastContainerPushed() {
         return objectStack.getLast();
     }
 
+    /**
+     * 
+     * @param string
+     */
     public void pop(String string) {
         MetaObject scalar = metaObjectStack.removeLast();
         String pushedName = nameStack.removeLast();
-        Object value = stringer.fromString(scalar.getObjectClass(), string);
+        Object value = converter.fromString(scalar.getObjectClass(), string);
         metaObjectStack.getLast().set(objectStack.getLast(), pushedName, value);
         lastPopped = value;
     }
 
+    /**
+     * 
+     */
     public void pop() {
         MetaObject metaObject = metaObjectStack.removeLast();
         lastPopped = metaObject.newInstance(stash, objectStack.removeLast());
         metaObjectStack.getLast().set(objectStack.getLast(), nameStack.removeLast(), lastPopped);
     }
     
+    /**
+     * 
+     * @return
+     */
     public Object getLastPopped() {
         return lastPopped;
     }
