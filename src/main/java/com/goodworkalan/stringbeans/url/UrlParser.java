@@ -8,13 +8,13 @@ import com.goodworkalan.permeate.Path;
 import com.goodworkalan.stash.Stash;
 import com.goodworkalan.stringbeans.CollectionParser;
 import com.goodworkalan.stringbeans.StringBeanException;
-import com.goodworkalan.stringbeans.Stringer;
+import com.goodworkalan.stringbeans.Converter;
 
 public class UrlParser {
     private final CollectionParser collectionParser;
     
-    public UrlParser(Stringer stringer) {
-        this.collectionParser = new CollectionParser(stringer, true);
+    public UrlParser(Converter converter) {
+        this.collectionParser = new CollectionParser(converter, true);
     }
     
     private StringToObjectMap tree(Map<String, String> form) {

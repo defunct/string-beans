@@ -1,6 +1,6 @@
 package com.goodworkalan.stringbeans.url;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -8,9 +8,8 @@ import java.util.Map;
 
 import org.testng.annotations.Test;
 
+import com.goodworkalan.stringbeans.Converter;
 import com.goodworkalan.stringbeans.StringBeanException;
-import com.goodworkalan.stringbeans.Stringer;
-import com.goodworkalan.stringbeans.StringerBuilder;
 
 public class UrlParserTest {
     @Test
@@ -104,8 +103,9 @@ public class UrlParserTest {
     }
     
     private UrlParser newUrlParser() {
-        Stringer stringer = new StringerBuilder().isBean(Widget.class).getInstance();
-        UrlParser parser = new UrlParser(stringer);
+        Converter converter = new Converter();
+        converter.isBean(Widget.class);
+        UrlParser parser = new UrlParser(converter);
         return parser;
     }
 }
