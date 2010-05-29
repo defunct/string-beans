@@ -10,7 +10,7 @@ import java.util.Map;
  * 
  * @author Alan Gutierrez
  */
-public abstract class AbstractEmitter {
+public abstract class AbstractEmitter<O, X extends Exception> {
     /** The conversion configuration. */
     protected final Converter converter;
     
@@ -26,7 +26,7 @@ public abstract class AbstractEmitter {
     }
 
     /** Emit a null value. */
-    protected abstract void emitNull();
+    protected abstract void emitNull(O output) throws X;
 
     /**
      * Emit a scalar object. Derived objects can use the <code>Diffuser</code>
@@ -35,7 +35,7 @@ public abstract class AbstractEmitter {
      * @param object
      *            Type type of object.
      */
-    protected abstract void emitScalar(Object object);
+    protected abstract void emitScalar(O output, Object object) throws X;
 
     /**
      * Emit the given <code>collection</code> as a series of objects. Derived
@@ -45,7 +45,7 @@ public abstract class AbstractEmitter {
      * @param collection
      *            The collection.
      */
-    protected abstract void emitCollection(Collection<?> collection);
+    protected abstract void emitCollection(O output, Collection<?> collection) throws X;
 
     /**
      * Emit the given <code>map</code> as a series of name value pairs. Derived
@@ -55,7 +55,7 @@ public abstract class AbstractEmitter {
      * @param map
      *            The map.
      */
-    protected abstract void emitMap(Map<?, ?> map);
+    protected abstract void emitMap(O output, Map<?, ?> map) throws X;
 
     /**
      * Emit the given <code>bean</code> properties as as a series of name value
@@ -67,7 +67,7 @@ public abstract class AbstractEmitter {
      * @param bean
      *            The bean.
      */
-    protected abstract void emitBean(MetaObject metaObject, Object bean);
+    protected abstract void emitBean(O output, MetaObject metaObject, Object bean) throws X;
 
     /**
      * Emit the given object calling the appropriate emit method for the object
@@ -76,17 +76,17 @@ public abstract class AbstractEmitter {
      * @param object
      *            The object.
      */
-    protected void emitObject(Object object) {
+    protected void emitObject(O output, Object object) throws X {
         if (object == null) {
-            emitNull();
+            emitNull(output);
         } else if (object instanceof Map<?, ?>) {
-            emitMap((Map<?, ?>) object);
+            emitMap(output, (Map<?, ?>) object);
         } else if (object instanceof Collection<?>) {
-            emitCollection((Collection<?>) object);
+            emitCollection(output, (Collection<?>) object);
         } else if (converter.isBean(object.getClass()))  {
-            emitBean(new MetaBean(object.getClass()), object);
+            emitBean(output, new MetaBean(object.getClass()), object);
         } else {
-            emitScalar(object);
+            emitScalar(output, object);
         }
     }
 }
