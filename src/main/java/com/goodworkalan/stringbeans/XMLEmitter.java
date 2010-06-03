@@ -1,5 +1,4 @@
 package com.goodworkalan.stringbeans;
-import static com.goodworkalan.stringbeans.Converter.box;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,125 +9,103 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-public class XMLEmitter extends AbstractEmitter {
-    private final ContentHandler handler;
+import com.goodworkalan.utility.Primitives;
 
-    public XMLEmitter(Stringer stringer, ContentHandler handler) {
-        super(stringer);
-        this.handler = handler;
+public class XMLEmitter extends AbstractEmitter<ContentHandler, SAXException> {
+    public XMLEmitter(Converter converter) {
+        super(converter);
     }
 
-    private void startElement(String name, String...attr) {
+    private void startElement(ContentHandler handler, String name, String...attr) throws SAXException {
         AttributesImpl attributes = new AttributesImpl();
         for (int i = 0; i < attr.length; i += 2) {
             attributes.addAttribute("", attr[i], attr[i], "CDATA", attr[i + 1]);
         }
-        try {
-            handler.startElement("", name, name, attributes);
-        } catch (SAXException e) {
-            throw new StringBeanException(XMLEmitter.class, "startElement", e);
-        }
+        handler.startElement("", name, name, attributes);
     }
     
-    private void endElement(String name) {
-        try {
-            handler.endElement("", name, name);
-        } catch (SAXException e) {
-            throw new StringBeanException(XMLEmitter.class, "endElement", e);
-        }
+    private void endElement(ContentHandler handler, String name) throws SAXException {
+        handler.endElement("", name, name);
     }
     
     @Override
-    protected void emitDictionary(Class<?> type, Map<?, ?> map) {
+    protected void emitMap(ContentHandler handler, Map<?, ?> map) throws SAXException {
+        Class<?> type = map.getClass();
         if (SortedMap.class.isAssignableFrom(type) || !Map.class.isAssignableFrom(type)) {
-            startElement("dictionary", "type", type.getCanonicalName());
+            startElement(handler, "dictionary", "type", type.getCanonicalName());
         } else {
-            startElement("dictionary");
+            startElement(handler, "dictionary");
         }
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             String key = entry.getKey().toString();
             if (entry.getValue() == null) {
-                startElement("entry", "name", key, "null", "true");
+                startElement(handler, "entry", "name", key, "null", "true");
             } else {
-                startElement("entry", "name", key);
-                expandObject(entry.getValue());
+                startElement(handler, "entry", "name", key);
+                emitObject(handler, entry.getValue());
             }
-            endElement("entry");
+            endElement(handler, "entry");
         }
-        endElement("dictionary");
+        endElement(handler, "dictionary");
     }
     
-    private void emitBeanGuts(MetaObject metaObject, Object object) {
+    @Override
+    protected void emitBean(ContentHandler handler, MetaObject metaObject, Object object) throws SAXException {
+        Class<?> type = metaObject.getObjectClass();
+        if (metaObject.getObjectClass().equals(type)) {
+            startElement(handler, "bean");
+        } else {
+            startElement(handler, "bean", "class", object.getClass().getName());
+        }
         for (ObjectBucket bucket : metaObject.buckets(object)) {
             if (bucket.getValue() == null) {
-                startElement(bucket.getName(), "null", "true");
+                startElement(handler, bucket.getName(), "null", "true");
             } else {
-                if (!box(bucket.getPropertyType()).equals(bucket.getValue().getClass())) {
-                    startElement(bucket.getName(), "class", bucket.getValue().getClass().getCanonicalName());
+                if (!Primitives.box((Class<?>) bucket.getPropertyType()).equals(bucket.getValue().getClass())) {
+                    startElement(handler, bucket.getName(), "class", bucket.getValue().getClass().getCanonicalName());
                 } else {
-                    startElement(bucket.getName());
+                    startElement(handler, bucket.getName());
                 }
-                expandObject(bucket.getValue());
+                emitObject(handler, bucket.getValue());
             }
-            endElement(bucket.getName());
+            endElement(handler, bucket.getName());
         }
-    }
-
-    @Override
-    protected void emitBean(Class<?> objectClass, MetaObject metaObject, Object object) {
-        if (metaObject.getObjectClass().equals(objectClass)) {
-            startElement("bean");
-        } else {
-            startElement("bean", "class", object.getClass().getCanonicalName());
-        }
-        emitBeanGuts(metaObject, object);
-        endElement("bean");
+        endElement(handler, "bean");
     }
     
     @Override
-    protected void emitSeries(Class<?> type, Collection<?> collection) {
+    protected void emitCollection(ContentHandler handler, Collection<?> collection) throws SAXException {
+        Class<?> type = collection.getClass();
         if (ArrayList.class.equals(type)) {
-            startElement("series");
+            startElement(handler, "series");
         } else {
-            startElement("series", "type", type.getCanonicalName());
+            startElement(handler, "series", "type", type.getCanonicalName());
         }
         for (Object o : collection) {
             if (o == null) {
-                startElement("item", "null", "true");
+                startElement(handler, "item", "null", "true");
             } else {
-                startElement("item");
-                expandObject(o);
+                startElement(handler, "item");
+                emitObject(handler, o);
             }
-            endElement("item");
+            endElement(handler, "item");
         }
-        endElement("series");
+        endElement(handler, "series");
     }
     
     @Override
-    protected void emitScalar(Class<?> type, Object object) {
-        char[] chars = object.toString().toCharArray();
-        try {
-            handler.characters(chars, 0, chars.length);
-        } catch (SAXException e) {
-            throw new StringBeanException(XMLEmitter.class, "characters", e);
-        }
+    protected void emitScalar(ContentHandler handler, Object object) throws SAXException {
+        char[] chars = converter.toString(object).toCharArray();
+        handler.characters(chars, 0, chars.length);
     }
     
     @Override
-    protected void emitNull() {
+    protected void emitNull(ContentHandler handler) {
     }
 
-    public void emit(Object object) {
-        try {
-            handler.startDocument();
-        } catch (SAXException e) {
-            throw new StringBeanException(XMLEmitter.class, "startDocument", e);
-        }
-        expandObject(object);
-        try {
-            handler.endDocument();
-        } catch (SAXException e) {
-            throw new StringBeanException(XMLEmitter.class, "endDocument", e);
-        }
+    public void emit(ContentHandler handler, Object object) throws SAXException {
+        handler.startDocument();
+        emitObject(handler, object);
+        handler.endDocument();
     }
 }

@@ -14,17 +14,16 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
-public class XMLEmitterBuilder {
-    private final Stringer stringer;
+import org.xml.sax.ContentHandler;
 
+public class XMLSerializerBuilder {
     private final Properties properties = new Properties();
     
     private final Map<String, Object> parameters = new HashMap<String, Object>();
     
     private final Map<String, Object> attributes = new HashMap<String, Object>();
     
-    public XMLEmitterBuilder(Stringer stringer) {
-        this.stringer = stringer;
+    public XMLSerializerBuilder() {
 //        properties.setProperty(OutputKeys.ENCODING, "ISO-8859-1");
         properties.setProperty(OutputKeys.INDENT, "yes");
         properties.setProperty(OutputKeys.METHOD, "xml");
@@ -43,8 +42,8 @@ public class XMLEmitterBuilder {
     public Map<String, Object> getAttributes() {
         return attributes;
     }
-
-    public XMLEmitter newXMLEmitter(OutputStream out) {
+    
+    public ContentHandler newSerializer(OutputStream out) {
         String charsetName = properties.getProperty(OutputKeys.ENCODING);
         if (charsetName == null) {
             charsetName = "UTF-8";
@@ -53,7 +52,7 @@ public class XMLEmitterBuilder {
         try {
             writer = new OutputStreamWriter(out, charsetName);
         } catch (UnsupportedEncodingException e) {
-            throw new StringBeanException(XMLEmitterBuilder.class, "OutputStreamWriter", e);
+            throw new StringBeanException(XMLSerializerBuilder.class, "OutputStreamWriter", e);
         }
         StreamResult streamResult = new StreamResult(writer);
         SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
@@ -64,13 +63,13 @@ public class XMLEmitterBuilder {
         try {
             handler = tf.newTransformerHandler();
         } catch (TransformerConfigurationException e) {
-            throw new StringBeanException(XMLEmitterBuilder.class, "newTransformerHandler", e);
+            throw new StringBeanException(XMLSerializerBuilder.class, "newTransformerHandler", e);
         }
         for (Object name : properties.keySet()) {
             String key = name.toString();
             handler.getTransformer().setOutputProperty(key, properties.getProperty(key));
         }
         handler.setResult(streamResult);
-        return new XMLEmitter(stringer, handler);
+        return handler;
     }
 }

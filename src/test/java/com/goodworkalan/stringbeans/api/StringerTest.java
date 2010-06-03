@@ -6,36 +6,30 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import org.testng.annotations.Test;
+import org.xml.sax.SAXException;
 
-import com.goodworkalan.stringbeans.ClassConverter;
-import com.goodworkalan.stringbeans.StringConverter;
-import com.goodworkalan.stringbeans.Stringer;
-import com.goodworkalan.stringbeans.StringerBuilder;
+import com.goodworkalan.stringbeans.Converter;
 import com.goodworkalan.stringbeans.XMLEmitter;
-import com.goodworkalan.stringbeans.XMLEmitterBuilder;
+import com.goodworkalan.stringbeans.XMLSerializerBuilder;
 import com.goodworkalan.stringbeans.XMLParser;
 
 public class StringerTest {
     @Test
-    public void testConversion() {
+    public void testConversion() throws SAXException {
         Person person = new Person();
         
         person.firstName = "Thomas";
         person.lastName = "Paine";
         person.birthYear = 1759;
         
-        Stringer stringer = new StringerBuilder()
-            .isBean(Person.class)
-            .converter(String.class, new StringConverter())
-            .converter(Class.class, new ClassConverter())
-            .getInstance();
-        
+        Converter converter = new Converter();
+        converter.isBean(Person.class);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        XMLEmitter emitter = new XMLEmitterBuilder(stringer).newXMLEmitter(out);
-        
-        emitter.emit(person);
+        XMLEmitter emitter = new XMLEmitter(converter); 
+            
+        emitter.emit(new XMLSerializerBuilder().newSerializer(out), person);
 
-        XMLParser parser = new XMLParser(stringer, true);
+        XMLParser parser = new XMLParser(converter, true);
         
         person = parser.parse(Person.class, new ByteArrayInputStream(out.toByteArray()));
         

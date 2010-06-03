@@ -10,7 +10,7 @@ public class XMLParserHandler extends DefaultHandler {
 
     private final StringBuilder characters = new StringBuilder();
     
-    public XMLParserHandler(Stringer stringer, Stash stash, MetaObject metaRoot, Object root, boolean ignoreMissing) {
+    public XMLParserHandler(Converter stringer, Stash stash, MetaObject metaRoot, Object root, boolean ignoreMissing) {
         this.objectStack = new ObjectStack(stringer, stash, metaRoot, root, ignoreMissing);
     }
     

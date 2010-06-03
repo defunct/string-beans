@@ -11,13 +11,13 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import com.goodworkalan.stash.Stash;
 
 public class XMLParser {
-    private final Stringer stringer;
+    private final Converter stringer;
     
     private final Stash stash;
     
     private final boolean ignoreMissing;
     
-    public XMLParser(Stringer stringer, boolean ignoreMissing) {
+    public XMLParser(Converter stringer, boolean ignoreMissing) {
         this.stringer = stringer;
         this.stash = new Stash();
         this.ignoreMissing = ignoreMissing;
