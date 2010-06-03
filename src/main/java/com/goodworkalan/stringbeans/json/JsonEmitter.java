@@ -124,11 +124,12 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
                     writer.write(quote(bucket.getName()));
                 }
                 writer.write(':');
-                indent++;
                 emitObject(writer, bucket.getValue());
-                indent--;
                 separator = ",\n";
             }
+            writer.write('\n');
+            indent--;
+            indent(writer);
             writer.write('}');
         } catch (IOException e) {
             throw new StringBeanException(JsonEmitter.class, "bean");
@@ -151,11 +152,12 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
                     writer.write(quote(key));
                 }
                 writer.write(':');
-                indent++;
                 emitObject(writer, entry.getValue());
-                indent--;
                 separator = ",\n";
             }
+            writer.write('\n');
+            indent--;
+            indent(writer);
             writer.write('}');
         } catch (IOException e) {
             throw new StringBeanException(JsonEmitter.class, "bean");
@@ -170,16 +172,18 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
         for (Object object : collection) {
             writer.write(separator);
             indent(writer);
-            indent++;
             emitObject(writer, object);
-            indent--;
             separator = ",\n";
         }
+        writer.write('\n');
+        indent--;
+        indent(writer);
         writer.write(']');
     }
 
     @Override
     protected void emitScalar(Writer writer, Object object) throws IOException {
+        object = converter.diffuser.diffuse(object);
         if (object instanceof String) {
             writer.write(quote(object.toString()));
         } else {
