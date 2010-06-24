@@ -21,13 +21,18 @@ import com.goodworkalan.stringbeans.MetaObject;
 import com.goodworkalan.stringbeans.ObjectBucket;
 import com.goodworkalan.stringbeans.StringBeanException;
 
+// TODO Document.
 public class MetaJpaBean implements BeanConstructor {
+    // TODO Document.
     public final static Stash.Key ENTITY_MANAGER = new Stash.Key();
 
+    // TODO Document.
     private final MetaObject metaBean;
     
+    // TODO Document.
     private final String idPropertyName;
     
+    // TODO Document.
     public MetaJpaBean(Class<?> objectClass) {
         if (objectClass.getAnnotation(Entity.class) == null) {
             throw new IllegalArgumentException();
@@ -60,6 +65,7 @@ public class MetaJpaBean implements BeanConstructor {
         this.idPropertyName = idPropertyName;
     }
     
+    // TODO Document.
     static BeanInfo introspect(Class<?> objectClass, Class<?> stopClass) {
         try {
             return Introspector.getBeanInfo(objectClass);
@@ -68,31 +74,38 @@ public class MetaJpaBean implements BeanConstructor {
         }
     }
 
+    // TODO Document.
     public Class<?> getObjectClass() {
         return metaBean.getObjectClass();
     }
     
+    // TODO Document.
     public Object newStackInstance() {
         return new HashMap<Object, Object>();
     }
 
+    // TODO Document.
     public boolean isScalar() {
         return false;
     }
     
+    // TODO Document.
     @SuppressWarnings("unchecked")
     public void set(Object object, String name, Object value) {
         ((Map) object).put(name, value);
     }
     
+    // TODO Document.
     public Type getPropertyType(String name) {
         return metaBean.getPropertyType(name);
     }
     
+    // TODO Document.
     public Iterable<ObjectBucket> buckets(Object object) {
         return metaBean.buckets(object);
     }
     
+    // TODO Document.
     @SuppressWarnings("unchecked")
     public Object newInstance(Stash stash, Object object) {
         Object bean = null;
