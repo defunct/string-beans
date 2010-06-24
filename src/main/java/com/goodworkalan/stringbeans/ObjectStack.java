@@ -55,6 +55,7 @@ public class ObjectStack {
      */
     private final boolean ignoreMissing;
 
+    // TODO Document.
     /**
      * Construct an object stack that builds an object graph starting at the
      * given <code>root</code> object which is maniuplated using the given
@@ -207,6 +208,7 @@ public class ObjectStack {
         }
     }
     
+    // TODO Document.
     /**
      * Get the last container object, a map, list or  pushed onto the stack, or 
      * @return
@@ -215,10 +217,7 @@ public class ObjectStack {
         return objectStack.getLast();
     }
 
-    /**
-     * 
-     * @param string
-     */
+    // TODO Document.
     public void pop(String string) {
         MetaObject scalar = metaObjectStack.removeLast();
         String pushedName = nameStack.removeLast();
@@ -227,19 +226,14 @@ public class ObjectStack {
         lastPopped = value;
     }
 
-    /**
-     * 
-     */
+    // TODO Document.
     public void pop() {
         MetaObject metaObject = metaObjectStack.removeLast();
         lastPopped = metaObject.newInstance(stash, objectStack.removeLast());
         metaObjectStack.getLast().set(objectStack.getLast(), nameStack.removeLast(), lastPopped);
     }
     
-    /**
-     * 
-     * @return
-     */
+    // TODO Document.
     public Object getLastPopped() {
         return lastPopped;
     }

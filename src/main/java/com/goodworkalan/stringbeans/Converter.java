@@ -23,19 +23,23 @@ public class Converter {
     /** The set of beans that can be read or written. */
     private final ClassAssociation<Class<? extends MetaObject>> beans;
     
+    // TODO Document.
     private final ConcurrentMap<Class<?>, MetaObject> metaObjectCache = new ConcurrentHashMap<Class<?>, MetaObject>();
     
     /** The set of converters (need a default set). */
     public final Infuser infuser;
     
+    // TODO Document.
     public final Diffuser diffuser;
 
+    // TODO Document.
     public Converter(Converter converter)  {
         this.beans = new ClassAssociation<Class<? extends MetaObject>>(converter.beans);
         this.diffuser = new Diffuser(converter.diffuser);
         this.infuser = new Infuser(converter.infuser);
     }
         
+    // TODO Document.
     public Converter() {
         this.beans = new ClassAssociation<Class<? extends MetaObject>>();
         this.beans.assignable(Object.class, MetaScalar.class);
@@ -93,6 +97,7 @@ public class Converter {
         return BeanConstructor.class.isAssignableFrom(beans.get(type));
     }
     
+    // TODO Document.
     public MetaObject getMetaObject(Type objectType) {
         if (objectType instanceof ParameterizedType) {
             Class<?> objectClass = (Class<?>) ((ParameterizedType) objectType).getRawType();
@@ -142,24 +147,27 @@ public class Converter {
         beans.exact(type, MetaBean.class);
     }
 
+    // TODO Document.
     public void setBean(Class<?> type, Class<? extends BeanConstructor> meta) {
         beans.exact(type, meta);
     }
 
+    // TODO Document.
     public void setBeanIfAssignableTo(Class<?> type) {
         beans.assignable(type, MetaBean.class);
     }
 
-
+    // TODO Document.
     public void setBeanIfAssignableTo(Class<?> type, Class<? extends BeanConstructor> meta) {
         beans.assignable(type, meta);
     }
 
-
+    // TODO Document.
     public void setBeanIfAnnotatedWith(Class<? extends Annotation> annotation) {
         beans.annotated(annotation, MetaBean.class);
     }
 
+    // TODO Document.
     public void setBeanIfAnnotatedWith(Class<? extends Annotation> annotation, Class<? extends BeanConstructor> meta) {
         beans.annotated(annotation, meta);
     }

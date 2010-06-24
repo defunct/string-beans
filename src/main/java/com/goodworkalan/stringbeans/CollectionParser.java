@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.goodworkalan.stash.Stash;
 
+// TODO Document.
 public class CollectionParser {
     /** The conversion strategies. */
     private final Converter converter;
@@ -15,9 +16,9 @@ public class CollectionParser {
      */
     private final Stash stash;
     
+    // TODO Document.
     private final boolean ignoreMissing;
     
-
     /**
      * Construct an object stack that builds an object graph starting at the
      * given <code>root</code> object which is maniuplated using the given
@@ -47,16 +48,19 @@ public class CollectionParser {
         return stash;
     }
 
+    // TODO Document.
     @SuppressWarnings("unchecked")
     private static Map<Object, Object> toObjectMap(Object map) {
         return (Map<Object, Object>) map;
     }
     
+    // TODO Document.
     @SuppressWarnings("unchecked")
     private static Collection<Object> toObjectCollection(Object list) {
         return (Collection<Object>) list;
     }
     
+    // TODO Document.
     private String getClassName(Object value) {
         if (value instanceof Map<?, ?>) {
             Map<?, ?> map = (Map<?, ?>) value;
@@ -65,6 +69,7 @@ public class CollectionParser {
         return null;
     }
     
+    // TODO Document.
     private void pop(ObjectStack objectStack, Object value) {
         if (value == null) {
             // What? Don't we set nulls?
@@ -89,6 +94,7 @@ public class CollectionParser {
         }
     }
 
+    // TODO Document.
     private void parseCollection(ObjectStack objectStack, Collection<Object> collection) {
         for (Object value : collection) {
             if (objectStack.push(null, getClassName(value))) {
@@ -97,6 +103,7 @@ public class CollectionParser {
         }
     }
 
+    // TODO Document.
     private void parseMap(ObjectStack objectStack, Map<Object, Object> map) {
         for (Map.Entry<Object, Object> entry : map.entrySet()) {
             Object value = entry.getValue();
@@ -106,6 +113,7 @@ public class CollectionParser {
         }
     }
     
+    // TODO Document.
     public <T> void populate(T rootObject, Map<?, ?> map) {
         if (map != null) {
             MetaObject metaRoot = converter.getMetaObject(rootObject.getClass());

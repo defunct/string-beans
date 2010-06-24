@@ -13,13 +13,17 @@ import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
 import com.goodworkalan.stash.Stash;
 
+// TODO Document.
 public class MetaMap implements MetaObject {
+    // TODO Document.
     private final ParameterizedType pt;
     
+    // TODO Document.
     public MetaMap(ParameterizedType pt) {
         this.pt = pt;
     }
 
+    // TODO Document.
     public Iterable<ObjectBucket> buckets(Object object) {
         final Iterator<?> eachEntry = ((Map<?, ?>) object).entrySet().iterator();
         return new Iterable<ObjectBucket>() {
@@ -42,18 +46,22 @@ public class MetaMap implements MetaObject {
         };
     }
 
+    // TODO Document.
     public Class<?> getObjectClass() {
         return (Class<?>) pt.getRawType();
     }
 
+    // TODO Document.
     public Type getPropertyType(String name) {
         return pt.getActualTypeArguments()[1];
     }
 
+    // TODO Document.
     public boolean isScalar() {
         return false;
     }
 
+    // TODO Document.
     public Object newStackInstance() {
         Class<?> mapClass = (Class<?>) pt.getRawType();
         if (!mapClass.isInterface()) {
@@ -87,6 +95,7 @@ public class MetaMap implements MetaObject {
         return object;
     }
 
+    // TODO Document.
     @SuppressWarnings("unchecked")
     public void set(Object object, String name, Object value) {
         ((Map) object).put(name, value);

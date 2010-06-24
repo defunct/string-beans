@@ -11,26 +11,33 @@ import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
 import com.goodworkalan.stash.Stash;
 
+// TODO Document.
 public class MetaCollection implements MetaObject {
+    // TODO Document.
     private final ParameterizedType collectionType;
     
+    // TODO Document.
     public MetaCollection(ParameterizedType collectionType) {
         this.collectionType = collectionType;
     }
 
+    // TODO Document.
     public Class<?> getObjectClass() {
         return (Class<?>) collectionType.getRawType();
     }
     
+    // TODO Document.
     public boolean isScalar() {
         return false;
     }
     
+    // TODO Document.
     @SuppressWarnings("unchecked")
     public void set(Object object, String name, Object value) {
         ((Collection) object).add(value);
     }
     
+    // TODO Document.
     public Object newStackInstance() {
         Class<?> objectClass = getObjectClass();
         if (objectClass.isInterface() || Modifier.isAbstract(objectClass.getModifiers())) {
@@ -50,10 +57,12 @@ public class MetaCollection implements MetaObject {
         }
     }
     
+    // TODO Document.
     public Type getPropertyType(String name) {
         return collectionType.getActualTypeArguments()[0];
     }
     
+    // TODO Document.
     public Iterable<ObjectBucket> buckets(Object object) {
         return null;
     }
