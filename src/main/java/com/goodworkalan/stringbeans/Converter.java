@@ -16,30 +16,43 @@ import com.goodworkalan.utility.ClassAssociation;
 
 /**
  * String beans emitter and parser configuration.
- *
+ * <p>
+ * The default <code>MetaObject</code> for <code>Object</code> is
+ * <code>MetaScalar</code>. A newly create <code>Converter</code> will have an
+ * assignable assocation between <code>Object</code> and <code>MetaScalar</code>.
+ * 
  * @author Alan Gutierrez
  */
 public class Converter {
     /** The set of beans that can be read or written. */
     private final ClassAssociation<Class<? extends MetaObject>> beans;
     
-    // TODO Document.
+    /** The cache of classes to their meta object information. */
     private final ConcurrentMap<Class<?>, MetaObject> metaObjectCache = new ConcurrentHashMap<Class<?>, MetaObject>();
     
     /** The set of converters (need a default set). */
     public final Infuser infuser;
     
-    // TODO Document.
+    /**
+     * The diffuser used to convert scalar values into strings and to diffuse
+     * object graphs for emitters that operate on diffused object graphs.
+     */
     public final Diffuser diffuser;
 
-    // TODO Document.
+    /**
+     * Create a copy of a <code>Converter</code>. The new <code>Converter</code>
+     * will not reference any of the objects referenced by the original
+     * <code>Converter</code>.
+     * 
+     * @param converter The converter.
+     */
     public Converter(Converter converter)  {
         this.beans = new ClassAssociation<Class<? extends MetaObject>>(converter.beans);
         this.diffuser = new Diffuser(converter.diffuser);
         this.infuser = new Infuser(converter.infuser);
     }
         
-    // TODO Document.
+    /** Construct an empty <code>Converter</code>. */
     public Converter() {
         this.beans = new ClassAssociation<Class<? extends MetaObject>>();
         this.beans.assignable(Object.class, MetaScalar.class);
@@ -97,7 +110,11 @@ public class Converter {
         return BeanConstructor.class.isAssignableFrom(beans.get(type));
     }
     
-    // TODO Document.
+    /**
+     * Get the meta object information associated with the given type. If  
+     * @param objectType
+     * @return
+     */
     public MetaObject getMetaObject(Type objectType) {
         if (objectType instanceof ParameterizedType) {
             Class<?> objectClass = (Class<?>) ((ParameterizedType) objectType).getRawType();
@@ -136,8 +153,8 @@ public class Converter {
     }
     
     /**
-     * Treat the given <code>type</code> as a Java Bean, writing out fields and
-     * bean properties as named values.
+     * Treat the given <code>type</code> as a Java Bean. Java Beans are
+     * serialized by writing out fields and bean properties as named values.
      * 
      * @param type
      *            The bean type.
@@ -147,27 +164,67 @@ public class Converter {
         beans.exact(type, MetaBean.class);
     }
 
-    // TODO Document.
+    /**
+     * Treat the given <code>type</code> as a Java Bean and construct them using
+     * the given <code>BeanConstructor</code> implementation. Java Beans are
+     * serialized by writing out fields and bean properties as named values.
+     * 
+     * @param type
+     *            The bean type.
+     * @param meta
+     *            The <code>BeanConstructor</code> used to create the Java Bean.
+     */
     public void setBean(Class<?> type, Class<? extends BeanConstructor> meta) {
         beans.exact(type, meta);
     }
 
-    // TODO Document.
+    /**
+     * Treat classes assignable the given super type or interface as a Java
+     * Bean. Java Beans are serialized by writing out fields and bean properties
+     * as named values.
+     * 
+     * @param annotation
+     *            The bean super type or interface.
+     */
     public void setBeanIfAssignableTo(Class<?> type) {
         beans.assignable(type, MetaBean.class);
     }
 
-    // TODO Document.
+    /**
+     * Treat classes assignable the given super type or interface as a Java Bean
+     * and construct them using the given <code>BeanConstructor</code>
+     * implementation. Java Beans are serialized by writing out fields and bean
+     * properties as named values.
+     * 
+     * @param annotation
+     *            The bean super type or interface.
+     * @param meta
+     *            The <code>BeanConstructor</code> used to create the Java Bean.
+     */
     public void setBeanIfAssignableTo(Class<?> type, Class<? extends BeanConstructor> meta) {
         beans.assignable(type, meta);
     }
 
-    // TODO Document.
+    /**
+     * Treat classes annotated with the given annotation as a Java Bean.
+     * 
+     * @param annotation
+     *            The annotation.
+     */
     public void setBeanIfAnnotatedWith(Class<? extends Annotation> annotation) {
         beans.annotated(annotation, MetaBean.class);
     }
 
-    // TODO Document.
+    /**
+     * Treat classes annotated with the given annotation as a Java Bean and
+     * construct them using the given <code>BeanConstructor</code>
+     * implementation.
+     * 
+     * @param annotation
+     *            The annotation.
+     * @param meta
+     *            The <code>BeanConstructor</code> used to create the Java Bean.
+     */
     public void setBeanIfAnnotatedWith(Class<? extends Annotation> annotation, Class<? extends BeanConstructor> meta) {
         beans.annotated(annotation, meta);
     }

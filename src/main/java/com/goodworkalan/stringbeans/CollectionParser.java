@@ -112,8 +112,17 @@ public class CollectionParser {
             }
         }
     }
-    
-    // TODO Document.
+
+    /**
+     * Populate the given root object using the given diffused object graph.
+     * 
+     * @param <T>
+     *            The type to populate.
+     * @param rootObject
+     *            The object to populate.
+     * @param map
+     *            The diffused object graph.
+     */
     public <T> void populate(T rootObject, Map<?, ?> map) {
         if (map != null) {
             MetaObject metaRoot = converter.getMetaObject(rootObject.getClass());
