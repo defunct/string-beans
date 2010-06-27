@@ -1,9 +1,9 @@
 package com.goodworkalan.stringbeans;
 
+import java.util.Map;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
-
-import com.goodworkalan.stash.Stash;
 
 /**
  * A SAX handler that converts an XML document in the String Beans XML format
@@ -23,7 +23,7 @@ public class XMLParserHandler extends DefaultHandler {
      * 
      * @param converter
      *            The String Beans definition.
-     * @param stash
+     * @param participants
      *            The heterogeneous container of unforeseen participants in the
      *            construction of the object.
      * @param metaRoot
@@ -34,8 +34,8 @@ public class XMLParserHandler extends DefaultHandler {
      *            Whether to ignore elements defined in the document that are
      *            not defined as members in the deserialized Java Bean.
      */
-    public XMLParserHandler(Converter converter, Stash stash, MetaObject metaRoot, Object root, boolean ignoreMissing) {
-        this.objectStack = new ObjectStack(converter, stash, metaRoot, root, ignoreMissing);
+    public XMLParserHandler(Converter converter, Map<Object, Object> participants, MetaObject metaRoot, Object root, boolean ignoreMissing) {
+        this.objectStack = new ObjectStack(converter, participants, metaRoot, root, ignoreMissing);
     }
 
     /**

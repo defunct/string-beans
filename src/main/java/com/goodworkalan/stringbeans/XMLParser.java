@@ -2,13 +2,13 @@ package com.goodworkalan.stringbeans;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
-
-import com.goodworkalan.stash.Stash;
 
 /**
  * Parse a String Beans XML document to create a String Beans object graph.
@@ -23,7 +23,7 @@ public class XMLParser {
      * The heterogeneous container of unforeseen participants in the
      * construction of the object.
      */
-    private final Stash stash;
+    private final Map<Object, Object> participants;
 
     /**
      * Whether to ignore members defined in the XML that are missing as members
@@ -42,7 +42,7 @@ public class XMLParser {
      */
     public XMLParser(Converter converter, boolean ignoreMissing) {
         this.converter = converter;
-        this.stash = new Stash();
+        this.participants = new HashMap<Object, Object>();
         this.ignoreMissing = ignoreMissing;
     }
 
@@ -53,8 +53,8 @@ public class XMLParser {
      * @return The heterogeneous container of unforeseen participants in the
      *         construction of the object.
      */
-    public Stash getStash() {
-        return stash;
+    public Map<Object, Object> getParticipants() {
+        return participants;
     }
 
     /**
@@ -77,7 +77,7 @@ public class XMLParser {
             throw new StringBeanException(XMLParser.class, "createXMLReader", e);
         }
         Object[] reference = new Object[1];
-        XMLParserHandler handler = new XMLParserHandler(converter, stash, new MetaRoot<T>(rootClass), reference, ignoreMissing);
+        XMLParserHandler handler = new XMLParserHandler(converter, participants, new MetaRoot<T>(rootClass), reference, ignoreMissing);
         xr.setContentHandler(handler);
         try {
             xr.parse(new InputSource(in));
