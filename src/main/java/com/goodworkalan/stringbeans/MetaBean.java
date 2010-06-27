@@ -11,7 +11,6 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -77,41 +76,6 @@ public class MetaBean implements BeanConstructor {
 
     public Type getType() {
         return type;
-    }
-
-    public Iterable<ObjectBucket> buckets(final Object object) {
-        final Iterator<String> eachName = names.iterator();
-        return new Iterable<ObjectBucket>() {
-            public Iterator<ObjectBucket> iterator() {
-                return new Iterator<ObjectBucket>() {
-                    public boolean hasNext() {
-                        return eachName.hasNext();
-                    }
-
-                    public ObjectBucket next() {
-                        try {
-                            try {
-                                String name = eachName.next();
-                                Field field = fields.get(name);
-                                if (field == null) {
-                                    Method reader = readers.get(name);
-                                    return new ObjectBucket(reader.getReturnType(), name, reader.invoke(object));
-                                }
-                                return new ObjectBucket(field.getType(),name, field.get(object));
-                            } catch (Throwable e) {
-                                throw new ReflectiveException(Reflective.encode(e), e);
-                            }
-                        } catch (ReflectiveException e) {
-                            throw new StringBeanException(MetaBean.class, "nextBucket", e);
-                        }
-                    }
-
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
-            }
-        };
     }
 
     public Set<String> getPropertyNames() {

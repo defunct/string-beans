@@ -5,7 +5,11 @@ import java.util.Map;
 
 import com.goodworkalan.stash.Stash;
 
-// TODO Document.
+/**
+ * Creates a String Beans object graph from a diffused object graph.
+ *
+ * @author Alan Gutierrez
+ */
 public class CollectionParser {
     /** The conversion strategies. */
     private final Converter converter;
@@ -16,7 +20,10 @@ public class CollectionParser {
      */
     private final Stash stash;
     
-    // TODO Document.
+    /**
+     * Whether to ignore properties pushed onto the stack for a Java Bean that
+     * are not defined as members of the Java Bean.
+     */
     private final boolean ignoreMissing;
     
     /**
@@ -48,31 +55,60 @@ public class CollectionParser {
         return stash;
     }
 
-    // TODO Document.
+    /**
+     * Cast an object to an object map. Extracted to a method to isolate the
+     * warning suppression.
+     * 
+     * @param object
+     *            The object.
+     * @return The object cast to a map.
+     */
     @SuppressWarnings("unchecked")
-    private static Map<Object, Object> toObjectMap(Object map) {
-        return (Map<Object, Object>) map;
+    private static Map<Object, Object> toObjectMap(Object object) {
+        return (Map<Object, Object>) object;
     }
     
-    // TODO Document.
+    /**
+     * Cast an object to an object map. Extracted to a method to isolate the
+     * warning suppression.
+     * 
+     * @param object
+     *            The object.
+     * @return The object cast to a map.
+     */
     @SuppressWarnings("unchecked")
-    private static Collection<Object> toObjectCollection(Object list) {
-        return (Collection<Object>) list;
+    private static Collection<Object> toObjectCollection(Object object) {
+        return (Collection<Object>) object;
     }
-    
-    // TODO Document.
+
+    /**
+     * Get the class name from the given object, if the object is map using the
+     * map property, otherwise return null.
+     * 
+     * @param value
+     *            The object.
+     * @return The class name of the object.
+     */
     private String getClassName(Object value) {
         if (value instanceof Map<?, ?>) {
             Map<?, ?> map = (Map<?, ?>) value;
-            map.get("class");
+            return map.get("class").toString();
         }
         return null;
     }
-    
-    // TODO Document.
+
+    /**
+     * Pop the object from the top object stack assigning it the given string
+     * value representation if it is a scalar.
+     * 
+     * @param objectStack
+     *            The object stack.
+     * @param value
+     *            The string value representation.
+     */
     private void pop(ObjectStack objectStack, Object value) {
         if (value == null) {
-            // What? Don't we set nulls?
+            // FIXME What? Don't we set nulls?
         } else if (objectStack.isScalar()) {
             objectStack.pop(value.toString());
         } else {
@@ -94,8 +130,16 @@ public class CollectionParser {
         }
     }
 
-    // TODO Document.
-    private void parseCollection(ObjectStack objectStack, Collection<Object> collection) {
+    /**
+     * Push elements of the given collection onto the object stack populating
+     * the collection at the top of the object stack.
+     * 
+     * @param objectStack
+     *            The object stack.
+     * @param collection
+     *            The collection to push.
+     */
+    private void parseCollection(ObjectStack objectStack, Collection<?> collection) {
         for (Object value : collection) {
             if (objectStack.push(null, getClassName(value))) {
                 pop(objectStack, value);
@@ -103,9 +147,17 @@ public class CollectionParser {
         }
     }
 
-    // TODO Document.
-    private void parseMap(ObjectStack objectStack, Map<Object, Object> map) {
-        for (Map.Entry<Object, Object> entry : map.entrySet()) {
+    /**
+     * Push the entries of the given map onto the object stack populating the
+     * map at the top of the object stack.
+     * 
+     * @param objectStack
+     *            The object stack.
+     * @param map
+     *            The map to push.
+     */
+    private void parseMap(ObjectStack objectStack, Map<?, ?> map) {
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
             Object value = entry.getValue();
             if (objectStack.push(entry.getKey().toString(), getClassName(value))) {
                 pop(objectStack, value);
@@ -130,7 +182,7 @@ public class CollectionParser {
                 throw new IllegalStateException();
             }
             ObjectStack objectStack = new ObjectStack(converter, stash, metaRoot, rootObject, ignoreMissing);
-            parseMap(objectStack, toObjectMap(map));
+            parseMap(objectStack, map);
         }
     }
 

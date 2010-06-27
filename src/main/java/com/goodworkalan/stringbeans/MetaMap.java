@@ -2,66 +2,73 @@ package com.goodworkalan.stringbeans;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
 import com.goodworkalan.stash.Stash;
 
-// TODO Document.
+/**
+ * Performs the basic operations of serialization on a map type.
+ * 
+ * @author Alan Gutierrez
+ */
 public class MetaMap implements MetaObject {
-    // TODO Document.
+    /** The actualized parameterized map type. */
     private final ParameterizedType pt;
-    
-    // TODO Document.
+
+    /**
+     * Create an instance of map meta information.
+     * 
+     * @param pt
+     *            The actualized parameterized map type.
+     */
     public MetaMap(ParameterizedType pt) {
         this.pt = pt;
     }
 
-    // TODO Document.
-    public Iterable<ObjectBucket> buckets(Object object) {
-        final Iterator<?> eachEntry = ((Map<?, ?>) object).entrySet().iterator();
-        return new Iterable<ObjectBucket>() {
-            public Iterator<ObjectBucket> iterator() {
-                return new Iterator<ObjectBucket>() {
-                    public boolean hasNext() {
-                        return eachEntry.hasNext();
-                    }
-
-                    public ObjectBucket next() {
-                        Map.Entry<?, ?> entry = (Entry<?, ?>) eachEntry.next();
-                        return new ObjectBucket(getPropertyType(null), entry.getKey().toString(), entry.getValue());
-                    }
-
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
-            }
-        };
-    }
-
-    // TODO Document.
+    /**
+     * Get the map type for this meta map.
+     * 
+     * @return The map type.
+     */
     public Class<?> getObjectClass() {
         return (Class<?>) pt.getRawType();
     }
 
-    // TODO Document.
+    /**
+     * Get the value type for this meta map.
+     * 
+     * @param name
+     *            The property name.
+     * @return The value type.
+     */
     public Type getPropertyType(String name) {
         return pt.getActualTypeArguments()[1];
     }
 
-    // TODO Document.
+    /**
+     * Return false indicating that maps are not scalars.
+     * 
+     * @return False indicating that maps are not scalars.
+     */
     public boolean isScalar() {
         return false;
     }
 
-    // TODO Document.
+    /**
+     * Create a new instance of a map to place on the object stack for
+     * population during parsing. If the map type is class, a new instance of
+     * the class is created using the default constructor of the class. If the
+     * type is <code>SortedMap</code> then a <code>TreeMap</code> is created. If
+     * the type is <code>Map</code> then a <code>LinkedHashMap</code> is
+     * created.
+     * 
+     * @return A new map instance.
+     */
     public Object newStackInstance() {
         Class<?> mapClass = (Class<?>) pt.getRawType();
         if (!mapClass.isInterface()) {
@@ -95,7 +102,16 @@ public class MetaMap implements MetaObject {
         return object;
     }
 
-    // TODO Document.
+    /**
+     * Put the given name and value into the given map object.
+     * 
+     * @param object
+     *            The map.
+     * @param name
+     *            The name.
+     * @param value
+     *            The value.
+     */
     @SuppressWarnings("unchecked")
     public void set(Object object, String name, Object value) {
         ((Map) object).put(name, value);

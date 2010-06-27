@@ -69,16 +69,6 @@ public interface MetaObject {
     public boolean isScalar();
 
     /**
-     * Returns a iterator over the readable properties in the object. For beans,
-     * those properties that have setters but no getters are excluded.
-     * 
-     * @param object
-     *            The object with property to iterate.
-     * @return An iterator over the readable properties in the given object.
-     */
-    public Iterable<ObjectBucket> buckets(Object object);
-
-    /**
      * Set the given <code>value</code> on the property with the given
      * <code>name</code> on the given <code>object</code>.
      * <p>

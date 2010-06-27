@@ -10,7 +10,13 @@ import org.testng.annotations.Test;
 
 import com.goodworkalan.diffuse.Diffuser;
 
+/**
+ * Unit tests for the {@link CollectionParser} class.
+ * 
+ * @author Alan Gutierrez
+ */
 public class CollectionParserTest {
+    /** Test creating a new root object. */
     @Test
     public void create() {
         Person person = new Person();
@@ -41,6 +47,7 @@ public class CollectionParserTest {
         assertEquals(person.addresses.get(0).zip, "70119");
     }
     
+    /** Test populating an existing root object. */
     @Test
     public void populate() {
         Person person = new Person();
@@ -73,12 +80,24 @@ public class CollectionParserTest {
         assertEquals(person.addresses.get(0).state, "LA");
         assertEquals(person.addresses.get(0).zip, "70119");
     }
-    
+
+    /**
+     * Convert the given object into an object map. Extracted as a method to
+     * isolate the warning suppression.
+     * 
+     * @param object
+     *            The object.
+     * @return The object cast to an object map.
+     */
     @SuppressWarnings("unchecked")
     private Map<Object, Object> toObjectMap(Object map) {
         return (Map) map;
     }
     
+    /**
+     * Test ingorning properties pushed onto the stack for a Java Bean that are
+     * not defined by the Jave Bean.
+     */
     @Test
     public void missing() {
         Person person = new Person();

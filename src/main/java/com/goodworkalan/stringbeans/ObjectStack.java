@@ -48,14 +48,13 @@ public class ObjectStack {
     
     /** The stack of names. */
     private final LinkedList<String> nameStack = new LinkedList<String>();
-    
+
     /**
-     * Whether to ignore names that are missing in the object currently being
-     * populated by the object stack.
+     * Whether to ignore properties pushed onto the stack for a Java Bean that
+     * are not defined as members of the Java Bean.
      */
     private final boolean ignoreMissing;
 
-    // TODO Document.
     /**
      * Construct an object stack that builds an object graph starting at the
      * given <code>root</code> object which is maniuplated using the given
@@ -67,8 +66,12 @@ public class ObjectStack {
      *            A heterogeneous container of unforeseen participants in the
      *            construction of the object.
      * @param rootMeta
+     *            The root meta object.
      * @param root
+     *            The root object.
      * @param ignoreMissing
+     *            Whether to ignore properties pushed onto the stack for a Java
+     *            Bean that are not defined as members of the Java Bean.
      */
     public ObjectStack(Converter converter, Stash stash, MetaObject rootMeta, Object root, boolean ignoreMissing) {
         this.converter = converter;
@@ -201,23 +204,28 @@ public class ObjectStack {
      */
     Class<?> forName(String className) {
         try {
-            // FIXME No! Use the current thread class loader.
-            return Class.forName(className);
+            return Thread.currentThread().getContextClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {
             throw new StringBeanException(ObjectStack.class, "forName", e);
         }
     }
     
-    // TODO Document.
     /**
-     * Get the last container object, a map, list or  pushed onto the stack, or 
-     * @return
+     * Get the last container object pushed onto the object stack.
+     * 
+     * @return The last container pushed.
      */
     public Object getLastContainerPushed() {
         return objectStack.getLast();
     }
 
-    // TODO Document.
+    /**
+     * Pop a scalar object from the stack, converting the scalar object and
+     * assigning it as property to the container below it on the stack.
+     * 
+     * @param string
+     *            The string representation of the scalar value.
+     */
     public void pop(String string) {
         MetaObject scalar = metaObjectStack.removeLast();
         String pushedName = nameStack.removeLast();
@@ -226,14 +234,26 @@ public class ObjectStack {
         lastPopped = value;
     }
 
-    // TODO Document.
+    /**
+     * Pop a container object from the top of stack, converting a possible place
+     * holder container to a bean using the meta object.
+     * <p>
+     * If the meta object needs container properties in order to determine how
+     * to build the actual bean object, then the meta object can push a place
+     * holder map onto the object stack. Popping the stack will create an actual
+     * bean using the place holder map.
+     */
     public void pop() {
         MetaObject metaObject = metaObjectStack.removeLast();
         lastPopped = metaObject.newInstance(stash, objectStack.removeLast());
         metaObjectStack.getLast().set(objectStack.getLast(), nameStack.removeLast(), lastPopped);
     }
-    
-    // TODO Document.
+
+    /**
+     * Get the last object popped off of the object stack.
+     * 
+     * @return THe last popped object.
+     */
     public Object getLastPopped() {
         return lastPopped;
     }

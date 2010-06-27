@@ -1,44 +1,66 @@
 package com.goodworkalan.stringbeans;
 
 import java.lang.reflect.Type;
-import java.util.Collections;
 
 import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
 import com.goodworkalan.stash.Stash;
 
-// TODO Document.
+/**
+ * Performs the basic operations of serialization on a pseudo-root object that
+ * has an actual root object as its only property.
+ * 
+ * @param <T>
+ *            The root type of an object graph.
+ * @author Alan Gutierrez
+ */
 public class MetaRoot<T> implements MetaObject {
-    // TODO Document.
+    /** The root class of an object graph. */
     private final Class<T> rootClass;
-    
-    // TODO Document.
+
+    /**
+     * Create a meta root using the given root class.
+     * 
+     * @param rootClass
+     *            The root class of an object graph.
+     */
     public MetaRoot(Class<T> rootClass) {
         this.rootClass = rootClass;
     }
-    
-    // TODO Document.
-    public Iterable<ObjectBucket> buckets(Object object) {
-        Object[] objects = (Object[]) object;
-        return Collections.singletonList(new ObjectBucket(Object.class, null, objects[0]));
-    }
-    
-    // TODO Document.
+
+    /**
+     * Throw an <code>UnsupportedOperationException</code> since there is no
+     * real object class, the root is the property of nothing.
+     * 
+     * @return The object class.
+     */
     public Class<?> getObjectClass() {
         throw new UnsupportedOperationException();
     }
-    
-    // TODO Document.
+
+    /**
+     * Return the root class as the property type. The name is ignored.
+     * 
+     * @param The
+     *            property name.
+     * @return The root class of the object graph.
+     */
     public Type getPropertyType(String name) {
         return rootClass;
     }
-    
-    // TODO Document.
+
+    /**
+     * Return false indicating that the root of the object graph is not a
+     * scalar.
+     * 
+     * @return False indicating that the root of the object graph is not a
+     *         scalar.
+     */
     public boolean isScalar() {
         return false;
     }
     
-    // TODO Document.
+    // FIXME Is this ever called?
     public Object newStackInstance() {
         try {
             try {
@@ -50,8 +72,17 @@ public class MetaRoot<T> implements MetaObject {
             throw new StringBeanException(MetaRoot.class, "newInstance", e);
         }
     }
-    
-    // TODO Document.
+
+    /**
+     * Record the root object in an object array.
+     * 
+     * @param object
+     *            The object array.
+     * @param name
+     *            Ignored.
+     * @param The
+     *            object value.
+     */
     public void set(Object object, String name, Object value) {
         ((Object[]) object)[0] = rootClass.cast(value);
     }

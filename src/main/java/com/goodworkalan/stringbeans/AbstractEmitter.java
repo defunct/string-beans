@@ -25,49 +25,70 @@ public abstract class AbstractEmitter<O, X extends Exception> {
         this.converter = converter;
     }
 
-    /** Emit a null value. */
+    /**
+     * Emit a null value.
+     * 
+     * @param output
+     *            The output destination.
+     * @throws X
+     *             For any I/O error.
+     */
     protected abstract void emitNull(O output) throws X;
 
     /**
      * Emit a scalar object. Derived objects can use the <code>Diffuser</code>
      * defined in the <code>conversions</code> property.
      * 
+     * @param output
+     *            The output destination.
      * @param object
      *            Type type of object.
+     * @throws X
+     *             For any I/O error.
      */
     protected abstract void emitScalar(O output, Object object) throws X;
 
     /**
      * Emit the given <code>collection</code> as a series of objects. Derived
-     * objects can call the {@link #emitObject(Object) expandObject} method to
-     * expand the collection elements.
+     * objects can call the {@link #emitObject(Object, Object) emitObject}
+     * method to expand the collection elements.
      * 
+     * @param output
+     *            The output destination.
      * @param collection
      *            The collection.
+     * @throws X
+     *             For any I/O error.
      */
     protected abstract void emitCollection(O output, Collection<?> collection) throws X;
 
     /**
      * Emit the given <code>map</code> as a series of name value pairs. Derived
-     * objects can call the {@link #emitObject(Object) expandObject} method to
-     * expand the map values.
+     * objects can call the {@link #emitObject(Object, Object) emitObject}
+     * method to expand the map values.
      * 
+     * @param output
+     *            The output destination.
      * @param map
      *            The map.
+     * @throws X
+     *             For any I/O error.
      */
     protected abstract void emitMap(O output, Map<?, ?> map) throws X;
 
     /**
      * Emit the given <code>bean</code> properties as as a series of name value
-     * pairs. Derived objects can call the {@link #emitObject(Object)
-     * expandObject} method to expand the property values.
+     * pairs. Derived objects can call the {@link #emitObject(Object, Object)
+     * emitObject} method to expand the property values.
      * 
-     * @param metaObject
-     *            The bean getters.
+     * @param output
+     *            The output destination.
      * @param bean
      *            The bean.
+     * @throws X
+     *             For any I/O error.
      */
-    protected abstract void emitBean(O output, MetaObject metaObject, Object bean) throws X;
+    protected abstract void emitBean(O output, Object bean) throws X;
 
     /**
      * Emit the given object calling the appropriate emit method for the object
@@ -84,7 +105,7 @@ public abstract class AbstractEmitter<O, X extends Exception> {
         } else if (object instanceof Collection<?>) {
             emitCollection(output, (Collection<?>) object);
         } else if (converter.isBean(object.getClass()))  {
-            emitBean(output, new MetaBean(object.getClass()), object);
+            emitBean(output, object);
         } else {
             emitScalar(output, object);
         }
