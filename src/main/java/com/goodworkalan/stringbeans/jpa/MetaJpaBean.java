@@ -3,9 +3,6 @@ package com.goodworkalan.stringbeans.jpa;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,46 +11,48 @@ import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.Id;
 
+import com.goodworkalan.reflective.getter.Getter;
+import com.goodworkalan.reflective.getter.Getters;
 import com.goodworkalan.stash.Stash;
 import com.goodworkalan.stringbeans.BeanConstructor;
 import com.goodworkalan.stringbeans.MetaBean;
 import com.goodworkalan.stringbeans.MetaObject;
-import com.goodworkalan.stringbeans.ObjectBucket;
 import com.goodworkalan.stringbeans.StringBeanException;
 
-// TODO Document.
+/**
+ * A meta bean that either creates a bean, or reads it from a JPA data source,
+ * if the bean already exists in the JPA data source.
+ * 
+ * @author Alan Gutierrez
+ */
 public class MetaJpaBean implements BeanConstructor {
-    // TODO Document.
+    /** The out-of-band data key for the entity manager. */
     public final static Stash.Key ENTITY_MANAGER = new Stash.Key();
 
-    // TODO Document.
+    /** The delegate meta bean. */
     private final MetaObject metaBean;
     
-    // TODO Document.
+    /** The name of id property. */
     private final String idPropertyName;
-    
-    // TODO Document.
+
+    /**
+     * Create a meta JPA bean using the given entity object.
+     * 
+     * @param objectClass The JPA entity type.
+     * @throws IllegalArgumentException
+     *             If the given object is not annotated with {@link Entity} and
+     *             therefore, not a JPA entity.
+     */
     public MetaJpaBean(Class<?> objectClass) {
         if (objectClass.getAnnotation(Entity.class) == null) {
             throw new IllegalArgumentException();
         }
 
         String idPropertyName = null;
-        for (Field field : objectClass.getFields()) {
-            if (field.getAnnotation(Id.class) != null) {
-                idPropertyName = field.getName();
+        for (Getter getter : Getters.getGetters(objectClass).values()) {
+            if (getter.getAccessibleObject().getAnnotation(Id.class) != null) {
+                idPropertyName = getter.getName();
                 break;
-            }
-        }
-
-        if (idPropertyName == null) {
-            BeanInfo beanInfo = introspect(objectClass, Object.class);
-            for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
-                Method method = property.getReadMethod();
-                if (method != null && method.getAnnotation(Id.class) != null) {
-                    idPropertyName = property.getName();
-                    break;
-                }
             }
         }
 
@@ -98,11 +97,6 @@ public class MetaJpaBean implements BeanConstructor {
     // TODO Document.
     public Type getPropertyType(String name) {
         return metaBean.getPropertyType(name);
-    }
-    
-    // TODO Document.
-    public Iterable<ObjectBucket> buckets(Object object) {
-        return metaBean.buckets(object);
     }
     
     // TODO Document.
