@@ -89,7 +89,10 @@ public class CollectionParser {
     private String getClassName(Object value) {
         if (value instanceof Map<?, ?>) {
             Map<?, ?> map = (Map<?, ?>) value;
-            return map.get("class").toString();
+            Class<?> type = (Class<?>) map.get("class");
+            if (type != null) {
+                return type.getName();
+            }
         }
         return null;
     }

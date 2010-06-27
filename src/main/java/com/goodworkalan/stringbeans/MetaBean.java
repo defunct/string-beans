@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
+import com.goodworkalan.reflective.setter.Setter;
 import com.goodworkalan.reflective.setter.Setters;
 
 /**
@@ -59,7 +60,11 @@ public class MetaBean implements BeanConstructor {
      * @return The property type.
      */
     public Type getPropertyType(String name) {
-        return Setters.getGetters(objectClass).get(name).getGenericType();
+        Setter setter =  Setters.getGetters(objectClass).get(name);
+        if (setter == null) {
+            return null;
+        }
+        return setter.getGenericType();
     }
 
     /**
