@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import com.goodworkalan.reflective.getter.Getter;
 import com.goodworkalan.reflective.getter.Getters;
@@ -106,9 +105,6 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
         quoted.append('"');
         return quoted.toString();
     }
-
-    /** A regular expression to match a Java identifier. */
-    private final static Pattern IDENTIFIER = Pattern.compile("[_$\\w&&[\\^d]][_$\\w]+");
 
     /**
      * Write given bean object to the given output stream.
