@@ -106,7 +106,7 @@ public class ObjectStack {
             if (ignoreMissing) {
                 return false;
             }
-            throw new StringBeanException(ObjectStack.class, "doesNotExist");
+            throw new StringBeanException(ObjectStack.class, "doesNotExist", type, name);
         } 
         if (type == null) {
             metaObject = converter.getMetaObject(propertyType);
