@@ -1,9 +1,8 @@
 package com.goodworkalan.stringbeans;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-
-import com.goodworkalan.stash.Stash;
 
 /**
  * Creates a String Beans object graph from a diffused object graph.
@@ -18,30 +17,28 @@ public class CollectionParser {
      * The heterogeneous container of unforeseen participants in the
      * construction of beans in the object graph.
      */
-    private final Stash stash;
+    private final Map<Object, Object> participants;
     
     /**
      * Whether to ignore properties pushed onto the stack for a Java Bean that
      * are not defined as members of the Java Bean.
      */
     private final boolean ignoreMissing;
-    
+
     /**
      * Construct an object stack that builds an object graph starting at the
      * given <code>root</code> object which is maniuplated using the given
      * <code>rootMeta</code> object.
      * 
-     * @param stringer
-     * @param stash
-     *            A heterogeneous container of unforeseen participants in the
-     *            construction of the object.
-     * @param rootMeta
-     * @param root
+     * @param converter
+     *            The String Beans configuration.
      * @param ignoreMissing
+     *            Whether to ignore properties pushed onto the stack for a Java
+     *            Bean that are not defined as members of the Java Bean.
      */
     public CollectionParser(Converter stringer, boolean ignoreMissing) {
         this.converter = stringer;
-        this.stash = new Stash();
+        this.participants = new HashMap<Object, Object>();
         this.ignoreMissing = ignoreMissing;
     }
 
@@ -51,8 +48,8 @@ public class CollectionParser {
      * 
      * @return The heterogeneous container of participants.
      */
-    public Stash getStash() {
-        return stash;
+    public Map<Object, Object> getParticipants() {
+        return participants;
     }
 
     /**
@@ -181,7 +178,7 @@ public class CollectionParser {
             if (metaRoot.isScalar()) {
                 throw new IllegalStateException();
             }
-            ObjectStack objectStack = new ObjectStack(converter, stash, metaRoot, rootObject, ignoreMissing);
+            ObjectStack objectStack = new ObjectStack(converter, participants, metaRoot, rootObject, ignoreMissing);
             parseMap(objectStack, map);
         }
     }
@@ -202,7 +199,7 @@ public class CollectionParser {
             return null;
         }
         Object[] bean = new Object[1];
-        ObjectStack objectStack = new ObjectStack(converter, stash, new MetaRoot<T>(rootClass), bean, ignoreMissing);
+        ObjectStack objectStack = new ObjectStack(converter, participants, new MetaRoot<T>(rootClass), bean, ignoreMissing);
         objectStack.push(null, null);
         parseMap(objectStack, toObjectMap(map));
         objectStack.pop();

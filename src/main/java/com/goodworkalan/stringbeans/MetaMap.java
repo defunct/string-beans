@@ -9,7 +9,6 @@ import java.util.TreeMap;
 
 import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
-import com.goodworkalan.stash.Stash;
 
 /**
  * Performs the basic operations of serialization on a map type.
@@ -91,14 +90,14 @@ public class MetaMap implements MetaObject {
      * Returns the given <code>object</code> since we returned a map object of
      * the appropriate type from {@link #newStackInstance() newStackInstance}.
      * 
-     * @param stash
+     * @param participants
      *            A heterogeneous container of unforeseen participants in the
      *            construction of the object.
      * @param object
      *            The object taken from the stack.
      * @return The given object.
      */
-    public Object newInstance(Stash stash, Object object) {
+    public Object newInstance(Map<Object, Object> participants, Object object) {
         return object;
     }
 

@@ -109,11 +109,13 @@ public class Converter {
         }
         return BeanConstructor.class.isAssignableFrom(beans.get(type));
     }
-    
+
     /**
-     * Get the meta object information associated with the given type. If  
+     * Get the meta object information associated with the given type.
+     * 
      * @param objectType
-     * @return
+     *            The object type.
+     * @return The bean converter for the given type.
      */
     public MetaObject getMetaObject(Type objectType) {
         if (objectType instanceof ParameterizedType) {

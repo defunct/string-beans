@@ -1,8 +1,7 @@
 package com.goodworkalan.stringbeans;
 
 import java.lang.reflect.Type;
-
-import com.goodworkalan.stash.Stash;
+import java.util.Map;
 
 /**
  * Represents the basic operations on objects during parsing and emission of
@@ -50,7 +49,7 @@ public interface MetaObject {
      * by returning one form the {@link #newStackInstance() newStackInstance}
      * method. That map will be passed to this method, which can build
      * 
-     * @param stash
+     * @param participants
      *            A heterogeneous container of unforeseen participants in the
      *            construction of the object.
      * @param object
@@ -58,7 +57,7 @@ public interface MetaObject {
      * @return A new instance of the actual object to be added to the
      *         constructed object graph.
      */
-    public Object newInstance(Stash stash, Object object);
+    public Object newInstance(Map<Object, Object> participants, Object object);
 
     /**
      * Return true if the object managed by this meta object is a scalar object,

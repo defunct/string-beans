@@ -3,6 +3,9 @@ package com.goodworkalan.stringbeans;
 import java.util.Collection;
 import java.util.Map;
 
+import com.goodworkalan.reflective.ReflectiveException;
+import com.goodworkalan.reflective.getter.Getter;
+
 /**
  * Navigates a object tree and invokes an appropriate method to emit a an object
  * tree member. Derived classes can use this is a template to create an emitter
@@ -89,6 +92,24 @@ public abstract class AbstractEmitter<O, X extends Exception> {
      *             For any I/O error.
      */
     protected abstract void emitBean(O output, Object bean) throws X;
+
+    /**
+     * Get the value returned by invoking the given getter on the the given
+     * bean.
+     * 
+     * @param getter
+     *            The getter.
+     * @param bean
+     *            The bean.
+     * @return The value.
+     */
+    protected Object get(Getter getter, Object bean) {
+        try {
+            return getter.get(bean);
+        } catch (ReflectiveException e) {
+            throw new StringBeanException(getClass(), "get", getClass(), getter.getName());
+        }
+    }
 
     /**
      * Emit the given object calling the appropriate emit method for the object

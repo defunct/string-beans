@@ -3,8 +3,7 @@ package com.goodworkalan.stringbeans;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
-
-import com.goodworkalan.stash.Stash;
+import java.util.Map;
 
 /**
  * Builds an object tree by pushing elements onto and popping them from a stack
@@ -35,7 +34,7 @@ public class ObjectStack {
      * A heterogeneous container of unforeseen participants in the construction
      * of the object.
      */
-    private final Stash stash;
+    private final Map<Object, Object> participants;
 
     /** The stack of meta objects. */
     private final LinkedList<MetaObject> metaObjectStack = new LinkedList<MetaObject>();
@@ -62,7 +61,7 @@ public class ObjectStack {
      * 
      * @param converter
      *            The conversion strategies.
-     * @param stash
+     * @param participants
      *            A heterogeneous container of unforeseen participants in the
      *            construction of the object.
      * @param rootMeta
@@ -73,9 +72,9 @@ public class ObjectStack {
      *            Whether to ignore properties pushed onto the stack for a Java
      *            Bean that are not defined as members of the Java Bean.
      */
-    public ObjectStack(Converter converter, Stash stash, MetaObject rootMeta, Object root, boolean ignoreMissing) {
+    public ObjectStack(Converter converter, Map<Object, Object> participants, MetaObject rootMeta, Object root, boolean ignoreMissing) {
         this.converter = converter;
-        this.stash = stash;
+        this.participants = participants;
         this.metaObjectStack.addLast(rootMeta);
         this.objectStack.addLast(root);
         this.ignoreMissing = ignoreMissing;
@@ -245,7 +244,7 @@ public class ObjectStack {
      */
     public void pop() {
         MetaObject metaObject = metaObjectStack.removeLast();
-        lastPopped = metaObject.newInstance(stash, objectStack.removeLast());
+        lastPopped = metaObject.newInstance(participants, objectStack.removeLast());
         metaObjectStack.getLast().set(objectStack.getLast(), nameStack.removeLast(), lastPopped);
     }
 

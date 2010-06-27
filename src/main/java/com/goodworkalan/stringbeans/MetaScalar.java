@@ -1,8 +1,8 @@
 package com.goodworkalan.stringbeans;
 
 import java.lang.reflect.Type;
+import java.util.Map;
 
-import com.goodworkalan.stash.Stash;
 import com.goodworkalan.utility.Primitives;
 
 /**
@@ -85,7 +85,7 @@ public class MetaScalar implements MetaObject {
      * scalars are never created, they are only converted to and from primitives
      * or strings.
      * 
-     * @param stash
+     * @param participants
      *            A heterogeneous container of unforeseen participants in the
      *            construction of the object.
      * @param object
@@ -94,7 +94,7 @@ public class MetaScalar implements MetaObject {
      * @exception UnsupportedOperationException
      *                If called.
      */
-    public Object newInstance(Stash stash, Object object) {
+    public Object newInstance(Map<Object, Object> participants, Object object) {
         throw new UnsupportedOperationException();
     }
 }

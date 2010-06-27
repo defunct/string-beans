@@ -16,9 +16,10 @@ import java.util.Set;
 
 import com.goodworkalan.reflective.Reflective;
 import com.goodworkalan.reflective.ReflectiveException;
-import com.goodworkalan.stash.Stash;
 
+// TODO Document.
 public class MetaBean implements BeanConstructor {
+    // TODO Document.
     private final Type type;
     private final Class<?> objectClass;
     private final Set<String> names = new HashSet<String>();
@@ -143,6 +144,11 @@ public class MetaBean implements BeanConstructor {
         }
     }
 
+    /**
+     * Return false indicating that the bean is not a scalar.
+     * 
+     * @return False indicating that the bean is not a scalar.
+     */
     public boolean isScalar() {
         return false;
     }
@@ -151,14 +157,14 @@ public class MetaBean implements BeanConstructor {
      * Returns the given <code>object</code> since we returned a bean of the
      * appropriate type from {@link #newStackInstance() newStackInstance}.
      * 
-     * @param stash
+     * @param participants
      *            A heterogeneous container of unforeseen participants in the
      *            construction of the object.
      * @param object
      *            The object taken from the stack.
      * @return The given object.
      */
-    public Object newInstance(Stash stash, Object object) {
+    public Object newInstance(Map<Object, Object> participants, Object object) {
         return object;
     }
 }
