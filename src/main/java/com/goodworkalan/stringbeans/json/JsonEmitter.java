@@ -6,10 +6,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.goodworkalan.reflective.getter.Getter;
+import com.goodworkalan.reflective.getter.Getters;
 import com.goodworkalan.stringbeans.AbstractEmitter;
 import com.goodworkalan.stringbeans.Converter;
-import com.goodworkalan.stringbeans.MetaObject;
-import com.goodworkalan.stringbeans.ObjectBucket;
 import com.goodworkalan.stringbeans.StringBeanException;
 
 /**
@@ -46,9 +46,21 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
         super(converter);
     }
     
+    /**
+     * Do nothing method solely to satisfy coverage in switch statement in
+     * switch statement fall throughs.
+     */
     private void greetingsCobertura() {
     }
 
+    /**
+     * Convert the given string into a JSON quoted string surrounded by double
+     * quotes.
+     * 
+     * @param value
+     *            The value.
+     * @return The JSON quoted string.
+     */
     private String quote(String value) {
         StringBuilder quoted = new StringBuilder();
         quoted.append('"');
@@ -95,36 +107,29 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
         return quoted.toString();
     }
 
-    private final static Pattern identifier = Pattern.compile("[_$\\w&&[\\^d]][_$\\w]+");
+    /** A regular expression to match a Java identifier. */
+    private final static Pattern IDENTIFIER = Pattern.compile("[_$\\w&&[\\^d]][_$\\w]+");
 
     /**
-     * Use the given
-     * <code>metaObject<code> to obtain the name and and values of the properties  properties of the given <code>bean</code>
-     * as a JSON object to the given <code>writer</code>
+     * Write given bean object to the given output stream.
      * 
      * @param writer
      *            The character output stream.
-     * @param metaObject
-     *            The meta object.
      * @param bean
      *            The bean object.
      */
     @Override
-    protected void emitBean(Writer writer, MetaObject metaObject, Object bean) throws IOException {
+    protected void emitBean(Writer writer, Object bean) throws IOException {
         try {
             writer.write('{');
             indent++;
             String separator = "\n";
-            for (ObjectBucket bucket : metaObject.buckets(bean)) {
+            for (Getter getter : Getters.getGetters(bean.getClass()).values()) {
                 writer.write(separator);
                 indent(writer);
-                if (identifier.matcher(bucket.getName()).matches()) {
-                    writer.write(bucket.getName());
-                } else {
-                    writer.write(quote(bucket.getName()));
-                }
+                writer.write(quote(getter.getName()));
                 writer.write(':');
-                emitObject(writer, bucket.getValue());
+                emitObject(writer, get(getter, bean));
                 separator = ",\n";
             }
             writer.write('\n');
@@ -135,9 +140,21 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
             throw new StringBeanException(JsonEmitter.class, "bean");
         }
     }
-    
+
+    /**
+     * Write the given map to the given output stream is a JSON object. If an
+     * entry key is a valid Java identifier, it will not be quoted in the
+     * output.
+     * 
+     * @param writer
+     *            The output stream.
+     * @param map
+     *            The map.
+     * @throws IOException
+     *             For any I/O error.
+     */
     @Override
-    protected void emitMap(Writer writer, Map<?, ?> map) {
+    protected void emitMap(Writer writer, Map<?, ?> map) throws IOException {
         try {
             writer.write('{');
             indent++;
@@ -146,11 +163,7 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
                 String key = entry.getKey().toString();
                 writer.write(separator);
                 indent(writer);
-                if (identifier.matcher(key).matches()) {
-                    writer.write(key);
-                } else {
-                    writer.write(quote(key));
-                }
+                writer.write(quote(key));
                 writer.write(':');
                 emitObject(writer, entry.getValue());
                 separator = ",\n";
@@ -163,7 +176,17 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
             throw new StringBeanException(JsonEmitter.class, "bean");
         }
     }
-    
+
+    /**
+     * Emit a collection to the the given output stream as a JSON array.
+     * 
+     * @param writer
+     *            The output stream.
+     * @param collection
+     *            The collection.
+     * @throws IOException
+     *             For any I/O exception.
+     */
     @Override
     protected void emitCollection(Writer writer, Collection<?> collection) throws IOException {
         writer.write('[');
@@ -181,21 +204,51 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
         writer.write(']');
     }
 
+    /**
+     * Emit a scalar object to the given writer using the <code>Diffuser</code>
+     * in the <code>Converter</code> to convert the scalar object into a
+     * primitive or <code>String</code>. If the object is a <code>String</code>
+     * or a <code>Character</code> it is written as a quoted JSON string,
+     * otherwise it is written using the <code>toString</code> method of the
+     * primitive.
+     * 
+     * @param writer
+     *            The output stream.
+     * @param object
+     *            The scalar object.
+     * @throws IOException
+     *             For any I/O error.
+     */
     @Override
     protected void emitScalar(Writer writer, Object object) throws IOException {
         object = converter.diffuser.diffuse(object);
         if (object instanceof String) {
             writer.write(quote(object.toString()));
+        } else if (object instanceof Character) {
+            writer.write(quote(Character.toString((Character) object)));
         } else {
             writer.write(object.toString());
         }
     }
 
+    /**
+     * Emit a JSON null value 
+     */
     @Override
     protected void emitNull(Writer writer) throws IOException {
         writer.write("null");
     }
-    
+
+    /**
+     * Emit the given object to the given output stream as a JSON string.
+     * 
+     * @param writer
+     *            The output stream.
+     * @param object
+     *            The object.
+     * @throws IOException
+     *             For any I/O error.
+     */
     public void emit(Writer writer, Object object) throws IOException {
         emitObject(writer, object);
     }
