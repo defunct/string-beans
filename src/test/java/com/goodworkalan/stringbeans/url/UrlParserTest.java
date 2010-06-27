@@ -68,9 +68,9 @@ public class UrlParserTest {
     
     @Test
     public void badPath() {
-            Map<String, String> form = new LinkedHashMap<String, String>();
-            form.put("#", "Hello, World!");
-            newUrlParser().create(Widget.class, form);
+        Map<String, String> form = new LinkedHashMap<String, String>();
+        form.put("#", "Hello, World!");
+        newUrlParser().create(Widget.class, form);
     }
     
     @Test(expectedExceptions=StringBeanException.class)
@@ -104,7 +104,7 @@ public class UrlParserTest {
     
     private UrlParser newUrlParser() {
         Converter converter = new Converter();
-        converter.isBean(Widget.class);
+        converter.setBean(Widget.class);
         UrlParser parser = new UrlParser(converter);
         return parser;
     }

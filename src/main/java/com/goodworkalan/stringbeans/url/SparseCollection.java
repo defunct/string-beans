@@ -35,7 +35,7 @@ class SparseCollection implements Collection<Object> {
     /**
      * Unsupported operation addAll, since this is a read only collection.
      * 
-     * @param o
+     * @param c
      *            The collection to add.
      * @return True if the collection changed as a result of the operation.
      */
@@ -58,7 +58,7 @@ class SparseCollection implements Collection<Object> {
      * Return true if this collection contains add of the values in the given
      * collection.
      * 
-     * @param o
+     * @param c
      *            The collection to test.
      * @return True if this collection contains all of the values in the given
      *         collection.
@@ -142,7 +142,7 @@ class SparseCollection implements Collection<Object> {
     /**
      * Unsupported operation removeAll, since this is a read only collection.
      * 
-     * @param o
+     * @param c
      *            The collection to remove.
      * @return True if the collection changed as a result of the operation.
      */
@@ -153,7 +153,7 @@ class SparseCollection implements Collection<Object> {
     /**
      * Unsupported operation retain, since this is a read only collection.
      * 
-     * @param o
+     * @param c
      *            The collection to retain.
      * @return True if the collection changed as a result of the operation.
      */
