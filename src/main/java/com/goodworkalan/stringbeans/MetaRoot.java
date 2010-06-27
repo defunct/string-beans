@@ -3,9 +3,6 @@ package com.goodworkalan.stringbeans;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-import com.goodworkalan.reflective.Reflective;
-import com.goodworkalan.reflective.ReflectiveException;
-
 /**
  * Performs the basic operations of serialization on a pseudo-root object that
  * has an actual root object as its only property.
@@ -59,18 +56,15 @@ public class MetaRoot<T> implements MetaObject {
     public boolean isScalar() {
         return false;
     }
-    
-    // FIXME Is this ever called?
+
+    /**
+     * Throws an <code>UnsupportedOperationException</code> since the root type
+     * is really a single element array that captured the constructed root.
+     * 
+     * @return Nothing.
+     */
     public Object newStackInstance() {
-        try {
-            try {
-                return rootClass.newInstance();
-            } catch (Throwable e) {
-                throw new ReflectiveException(Reflective.encode(e), e);
-            }
-        } catch (ReflectiveException e) {
-            throw new StringBeanException(MetaRoot.class, "newInstance", e);
-        }
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -88,17 +82,17 @@ public class MetaRoot<T> implements MetaObject {
     }
 
     /**
-     * Returns the given <code>object</code> since we returned an object of the
-     * appropriate type from {@link #newStackInstance() newStackInstance}.
+     * Throws an <code>UnsupportedOperationException</code> since the root type
+     * is really a single element array that captured the constructed root.
      * 
      * @param participants
      *            A heterogeneous container of unforeseen participants in the
      *            construction of the object.
      * @param object
      *            The object taken from the stack.
-     * @return The given object.
+     * @return Nothing.
      */
     public Object newInstance(Map<Object, Object> participants,  Object object) {
-        return object;
+        throw new UnsupportedOperationException();
     }
 }

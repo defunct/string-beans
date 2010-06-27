@@ -95,8 +95,8 @@ public class MetaCollection implements MetaObject {
     /**
      * Get the collection item type. The name is ignored.
      * 
-     * @param Ignored
-     *            for collecitons.
+     * @param name
+     *            Ignored for collecitons.
      * @return The collection item type.
      */
     public Type getPropertyType(String name) {

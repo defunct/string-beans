@@ -26,7 +26,7 @@ public interface MetaObject {
      * Advanced implementations may want to construct the actual object based on
      * the object properties. This method gives those implementations the
      * opportunity to place a map on the stack to gather the properties, then
-     * build the actual object using the {@link #newInstance(Stash, Object)
+     * build the actual object using the {@link #newInstance(Map, Object)
      * newInstance} method.
      * 
      * @return A new instance, possibly a place holder instance, to place on the
@@ -82,8 +82,13 @@ public interface MetaObject {
      *            The object value.
      */
     public void set(Object object, String name, Object value);
-    
-    // FIXME To support a set of types, this will have to take a name and a
-    // class. Only if the set is a singleton set, can the class be null.
+
+    /**
+     * Get the property type.
+     * 
+     * @param name
+     *            The property name.
+     * @return The property type.
+     */
     public Type getPropertyType(String name);
 }

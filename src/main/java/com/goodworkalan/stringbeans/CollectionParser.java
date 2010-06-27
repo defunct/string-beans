@@ -36,8 +36,8 @@ public class CollectionParser {
      *            Whether to ignore properties pushed onto the stack for a Java
      *            Bean that are not defined as members of the Java Bean.
      */
-    public CollectionParser(Converter stringer, boolean ignoreMissing) {
-        this.converter = stringer;
+    public CollectionParser(Converter converter, boolean ignoreMissing) {
+        this.converter = converter;
         this.participants = new HashMap<Object, Object>();
         this.ignoreMissing = ignoreMissing;
     }

@@ -160,7 +160,6 @@ public class Converter {
      * 
      * @param type
      *            The bean type.
-     * @return This builder to continue configuration.
      */
     public void setBean(Class<?> type) {
         beans.exact(type, MetaBean.class);
@@ -185,7 +184,7 @@ public class Converter {
      * Bean. Java Beans are serialized by writing out fields and bean properties
      * as named values.
      * 
-     * @param annotation
+     * @param type
      *            The bean super type or interface.
      */
     public void setBeanIfAssignableTo(Class<?> type) {
@@ -198,7 +197,7 @@ public class Converter {
      * implementation. Java Beans are serialized by writing out fields and bean
      * properties as named values.
      * 
-     * @param annotation
+     * @param type
      *            The bean super type or interface.
      * @param meta
      *            The <code>BeanConstructor</code> used to create the Java Bean.
