@@ -38,8 +38,8 @@ public class MetaRoot<T> implements MetaObject {
     /**
      * Return the root class as the property type. The name is ignored.
      * 
-     * @param The
-     *            property name.
+     * @param name
+     *            The property name.
      * @return The root class of the object graph.
      */
     public Type getPropertyType(String name) {
@@ -74,8 +74,8 @@ public class MetaRoot<T> implements MetaObject {
      *            The object array.
      * @param name
      *            Ignored.
-     * @param The
-     *            object value.
+     * @param value
+     *            The object value.
      */
     public void set(Object object, String name, Object value) {
         ((Object[]) object)[0] = rootClass.cast(value);

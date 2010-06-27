@@ -164,7 +164,7 @@ public class ObjectStack {
      * @param name
      *            The property name or <code>null</code> if this is the root of
      *            the object tree or the parent is a collection.
-     * @param type
+     * @param className
      *            The type of the object to push onto the stack or null if the
      *            type can be determined by reflecting upon the parent.
      * @return <code>true</code> if the object is actually pushed onto the

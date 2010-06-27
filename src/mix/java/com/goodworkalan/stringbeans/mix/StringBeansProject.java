@@ -26,7 +26,6 @@ public class StringBeansProject implements ProjectModule {
                     .production("com.github.bigeasy.danger/danger/0.+1")
                     .production("com.github.bigeasy.class/class-association/0.+1")
                     .production("com.github.bigeasy.diffuse/diffuse/0.+1")
-                    .production("com.github.bigeasy.reflective/reflective/0.+1")
                     .production("com.github.bigeasy.reflective/reflective-setter/0.+1")
                     .development("org.testng/testng-jdk15/5.10")
                     .development("org.mockito/mockito-core/1.6")
