@@ -35,7 +35,7 @@ public class CollectionParserTest {
         Converter converter = new Converter();
         converter.setBean(Person.class);
         converter.setBean(Address.class);
-        CollectionParser parser = new CollectionParser(converter, false);
+        CollectionParser parser = new CollectionParser(converter, true);
         
         person = parser.create(Person.class, (Map<?, ?>) new Diffuser().diffuse(person, "*"));
         
@@ -66,7 +66,7 @@ public class CollectionParserTest {
         Converter converter = new Converter();
         converter.setBean(Person.class);
         converter.setBean(Address.class);
-        CollectionParser parser = new CollectionParser(converter, false);
+        CollectionParser parser = new CollectionParser(converter, true);
         
         Object diffused = new Diffuser().diffuse(person, "*");
         person = new Person();
