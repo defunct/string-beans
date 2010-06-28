@@ -21,7 +21,7 @@ import com.goodworkalan.stringbeans.StringBeanException;
  * 
  * @author Alan Gutierrez
  */
-public class MetaJpaBean implements BeanConstructor {
+public class MetaEntity implements BeanConstructor {
     /** The out-of-band data key for the entity manager. */
     public final static Object ENTITY_MANAGER = new Object();
 
@@ -39,7 +39,7 @@ public class MetaJpaBean implements BeanConstructor {
      *             If the given object is not annotated with {@link Entity} and
      *             therefore, not a JPA entity.
      */
-    public MetaJpaBean(Class<?> objectClass) {
+    public MetaEntity(Class<?> objectClass) {
         if (objectClass.getAnnotation(Entity.class) == null) {
             throw new IllegalArgumentException();
         }
@@ -131,7 +131,7 @@ public class MetaJpaBean implements BeanConstructor {
         if (id != null) {
             Object em = participants.get(ENTITY_MANAGER);
             if (em == null) {
-                throw new StringBeanException(MetaJpaBean.class, "entityManagerMissing");
+                throw new StringBeanException(MetaEntity.class, "entityManagerMissing");
             }
             bean = ((EntityManager) em).find(getObjectClass(), id);
         }
