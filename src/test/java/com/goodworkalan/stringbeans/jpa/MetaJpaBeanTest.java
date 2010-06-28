@@ -2,11 +2,14 @@ package com.goodworkalan.stringbeans.jpa;
 
 import org.testng.annotations.Test;
 
-// TODO Document.
+/**
+ * Unit tests for the {@link MetaJpaBean} class.
+ * 
+ * @author Alan Gutierrez
+ */
 public class MetaJpaBeanTest {
-    // TODO Document.
+    /** Need at least one test for a default Mix project to build. */
     @Test
-    public void introspection() {
-        MetaJpaBean.introspect(String.class, Number.class);
+    public void nothing() {
     }
 }
