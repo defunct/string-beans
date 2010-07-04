@@ -3,7 +3,6 @@ package com.goodworkalan.stringbeans;
 import java.util.Collection;
 import java.util.Map;
 
-import com.goodworkalan.reflective.ReflectiveException;
 import com.goodworkalan.reflective.getter.Getter;
 
 /**
@@ -106,8 +105,24 @@ public abstract class AbstractEmitter<O, X extends Exception> {
     protected Object get(Getter getter, Object bean) {
         try {
             return getter.get(bean);
-        } catch (ReflectiveException e) {
+        } catch (Exception e) {
+            checkRuntimeException(e);
             throw new StringBeanException(getClass(), "get", getClass(), getter.getName());
+        }
+    }
+    
+    /**
+     * Throw the given exception if it is a <code>RuntimeException</code>. This
+     * method extracted for isolation in testing.
+     * 
+     * @param e
+     *            The exception.
+     * @exception RuntimeException
+     *                If the given exception is a <code>RuntimeException</code>.
+     */
+    static void checkRuntimeException(Exception e) {
+        if (e instanceof RuntimeException) {
+            throw (RuntimeException) e;
         }
     }
 

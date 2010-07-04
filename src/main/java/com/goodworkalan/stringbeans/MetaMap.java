@@ -1,14 +1,13 @@
 package com.goodworkalan.stringbeans;
 
+import static com.goodworkalan.stringbeans.StringBeanException.$;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import com.goodworkalan.reflective.Reflective;
-import com.goodworkalan.reflective.ReflectiveException;
 
 /**
  * Performs the basic operations of serialization on a map type.
@@ -72,13 +71,9 @@ public class MetaMap implements MetaObject {
         Class<?> mapClass = (Class<?>) pt.getRawType();
         if (!mapClass.isInterface()) {
             try {
-                try {
-                    return mapClass.newInstance();
-                } catch (Throwable e) {
-                    throw new ReflectiveException(Reflective.encode(e), e);
-                }
-            } catch (ReflectiveException e) {
-                throw new StringBeanException(MetaMap.class, "newInstance", e);
+                return mapClass.newInstance();
+            } catch (Throwable e) {
+                throw new StringBeanException($(e), MetaMap.class, "newInstance");
             }
         } else if (SortedMap.class.isAssignableFrom(mapClass)) {
             return new TreeMap<Object, Object>();

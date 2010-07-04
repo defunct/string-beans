@@ -1,5 +1,7 @@
 package com.goodworkalan.stringbeans;
 
+import static com.goodworkalan.stringbeans.StringBeanException.$;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -10,8 +12,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import com.goodworkalan.diffuse.Diffuser;
 import com.goodworkalan.infuse.Infuser;
-import com.goodworkalan.reflective.Reflective;
-import com.goodworkalan.reflective.ReflectiveException;
 import com.goodworkalan.utility.ClassAssociation;
 
 /**
@@ -138,13 +138,9 @@ public class Converter {
                 } else {
                     Class<? extends MetaObject> metaObjectClass = beans.get(objectClass);
                     try {
-                        try {
-                            metaObject = metaObjectClass.getConstructor(Class.class).newInstance(objectClass);
-                        } catch (Throwable e) {
-                            throw new ReflectiveException(Reflective.encode(e), e);
-                        }
-                    } catch (ReflectiveException e) {
-                        throw new StringBeanException(Converter.class, "metaObjectCreate", e, metaObjectClass, objectClass);
+                        metaObject = metaObjectClass.getConstructor(Class.class).newInstance(objectClass);
+                    } catch (Throwable e) {
+                        throw new StringBeanException($(e), Converter.class, "metaObjectCreate", e, metaObjectClass, objectClass);
                     }
                 }
                 metaObjectCache.put(objectClass, metaObject);

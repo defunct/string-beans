@@ -1,5 +1,7 @@
 package com.goodworkalan.stringbeans;
 
+import static com.goodworkalan.stringbeans.StringBeanException.$;
+
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -7,9 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import com.goodworkalan.reflective.Reflective;
-import com.goodworkalan.reflective.ReflectiveException;
 
 /**
  * Performs the basic operations of serialization on a collection type.
@@ -82,13 +81,9 @@ public class MetaCollection implements MetaObject {
         }
         Class<?> createClass = objectClass;
         try {
-            try {
-                return createClass.newInstance();
-            } catch (Throwable e) {
-                throw new ReflectiveException(Reflective.encode(e), e);
-            }
-        } catch (ReflectiveException e) {
-            throw new StringBeanException(MetaCollection.class, "newInstance", e);
+            return createClass.newInstance();
+        } catch (Throwable e) {
+            throw new StringBeanException($(e), MetaCollection.class, "newInstance");
         }
     }
 

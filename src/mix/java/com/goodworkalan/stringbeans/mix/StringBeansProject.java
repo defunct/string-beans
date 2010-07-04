@@ -23,7 +23,6 @@ public class StringBeansProject implements ProjectModule {
                 .depends()
                     .production("com.github.bigeasy.class/class-boxer/0.+1")
                     .production("com.github.bigeasy.infuse/infuse/0.+1")
-                    .production("com.github.bigeasy.danger/danger/0.+1")
                     .production("com.github.bigeasy.class/class-association/0.+1")
                     .production("com.github.bigeasy.diffuse/diffuse/0.+1")
                     .production("com.github.bigeasy.reflective/reflective-setter/0.+1")

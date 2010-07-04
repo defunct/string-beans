@@ -1,10 +1,10 @@
 package com.goodworkalan.stringbeans;
 
+import static com.goodworkalan.stringbeans.StringBeanException.$;
+
 import java.lang.reflect.Type;
 import java.util.Map;
 
-import com.goodworkalan.reflective.Reflective;
-import com.goodworkalan.reflective.ReflectiveException;
 import com.goodworkalan.reflective.setter.Setter;
 import com.goodworkalan.reflective.setter.Setters;
 
@@ -35,13 +35,9 @@ public class MetaBean implements BeanConstructor {
      */
     public Object newStackInstance() {
         try {
-            try {
-                return objectClass.newInstance();
-            } catch (Throwable e) {
-                throw new ReflectiveException(Reflective.encode(e), e);
-            }
-        } catch (ReflectiveException e) {
-            throw new StringBeanException(MetaBean.class, "newInstance", e);
+            return objectClass.newInstance();
+        } catch (Throwable e) {
+            throw new StringBeanException($(e), MetaBean.class, "newInstance");
         }
     }
 
@@ -81,8 +77,8 @@ public class MetaBean implements BeanConstructor {
     public void set(Object object, String name, Object value) {
         try {
             Setters.getGetters(objectClass).get(name).set(object, value);
-        } catch (ReflectiveException e) {
-            throw new StringBeanException(MetaBean.class, "fieldSet", e);
+        } catch (Throwable e) {
+            throw new StringBeanException($(e), MetaBean.class, "fieldSet", e);
         }
     }
 
