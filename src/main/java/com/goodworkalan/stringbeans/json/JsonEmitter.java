@@ -9,7 +9,6 @@ import com.goodworkalan.reflective.getter.Getter;
 import com.goodworkalan.reflective.getter.Getters;
 import com.goodworkalan.stringbeans.AbstractEmitter;
 import com.goodworkalan.stringbeans.Converter;
-import com.goodworkalan.stringbeans.StringBeanException;
 
 /**
  * Writes an object graph as JSON to a character stream.  
@@ -96,11 +95,12 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
                 break;
             default:
                 if (ch < ' ' || (ch >= '\u0080' && ch < '\u00a0') || (ch >= '\u2000' && ch < '\u2100')) {
-                    quoted.append(String.format("\\u%04d", Integer.toHexString(ch)));
+                    quoted.append(String.format("\\u%04x", (int) ch));
                 } else {
                     quoted.append(ch);
                 }
             }
+            previous = ch;
         }
         quoted.append('"');
         return quoted.toString();
@@ -116,25 +116,21 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
      */
     @Override
     protected void emitBean(Writer writer, Object bean) throws IOException {
-        try {
-            writer.write('{');
-            indent++;
-            String separator = "\n";
-            for (Getter getter : Getters.getGetters(bean.getClass()).values()) {
-                writer.write(separator);
-                indent(writer);
-                writer.write(quote(getter.getName()));
-                writer.write(':');
-                emitObject(writer, get(getter, bean));
-                separator = ",\n";
-            }
-            writer.write('\n');
-            indent--;
+        writer.write('{');
+        indent++;
+        String separator = "\n";
+        for (Getter getter : Getters.getGetters(bean.getClass()).values()) {
+            writer.write(separator);
             indent(writer);
-            writer.write('}');
-        } catch (IOException e) {
-            throw new StringBeanException(JsonEmitter.class, "bean");
+            writer.write(quote(getter.getName()));
+            writer.write(':');
+            emitObject(writer, get(getter, bean));
+            separator = ",\n";
         }
+        writer.write('\n');
+        indent--;
+        indent(writer);
+        writer.write('}');
     }
 
     /**
@@ -151,26 +147,22 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
      */
     @Override
     protected void emitMap(Writer writer, Map<?, ?> map) throws IOException {
-        try {
-            writer.write('{');
-            indent++;
-            String separator = "\n";
-            for (Map.Entry<?, ?> entry : map.entrySet()) {
-                String key = entry.getKey().toString();
-                writer.write(separator);
-                indent(writer);
-                writer.write(quote(key));
-                writer.write(':');
-                emitObject(writer, entry.getValue());
-                separator = ",\n";
-            }
-            writer.write('\n');
-            indent--;
+        writer.write('{');
+        indent++;
+        String separator = "\n";
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            String key = entry.getKey().toString();
+            writer.write(separator);
             indent(writer);
-            writer.write('}');
-        } catch (IOException e) {
-            throw new StringBeanException(JsonEmitter.class, "bean");
+            writer.write(quote(key));
+            writer.write(':');
+            emitObject(writer, entry.getValue());
+            separator = ",\n";
         }
+        writer.write('\n');
+        indent--;
+        indent(writer);
+        writer.write('}');
     }
 
     /**
@@ -218,12 +210,12 @@ public class JsonEmitter extends AbstractEmitter<Writer, IOException> {
     @Override
     protected void emitScalar(Writer writer, Object object) throws IOException {
         object = converter.diffuser.diffuse(object);
-        if (object instanceof String) {
-            writer.write(quote(object.toString()));
+        if ((object instanceof Number) || (object instanceof Boolean)) {
+            writer.write(object.toString());
         } else if (object instanceof Character) {
             writer.write(quote(Character.toString((Character) object)));
         } else {
-            writer.write(object.toString());
+            writer.write(quote(object.toString()));
         }
     }
 
