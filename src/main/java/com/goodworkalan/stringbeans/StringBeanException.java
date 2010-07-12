@@ -46,7 +46,7 @@ public class StringBeanException extends RuntimeException {
      *            The message format arguments.
      */
     public StringBeanException( Throwable cause, Class<?> contextClass, String code,Object...arguments) {
-        super(formatMessage(contextClass, code), cause);
+        super(_(contextClass, code), cause);
         this.contextClass = contextClass;
         this.code = code;
     }
@@ -64,7 +64,7 @@ public class StringBeanException extends RuntimeException {
      *            The format message arguments.
      * @return The formatted message.
      */
-    private final static String formatMessage(Class<?> contextClass, String code, Object...arguments) {
+    public final static String _(Class<?> contextClass, String code, Object...arguments) {
         String baseName = contextClass.getPackage().getName() + ".exceptions";
         String messageKey = contextClass.getSimpleName() + "/" + code;
         try {
