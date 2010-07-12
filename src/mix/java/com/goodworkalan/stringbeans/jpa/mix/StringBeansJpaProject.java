@@ -19,7 +19,7 @@ public class StringBeansJpaProject implements ProjectModule {
     public void build(Builder builder) {
         builder
             .cookbook(JavaProject.class)
-                .produces("com.github.bigeasy.string-beans/string-beans-jpa/0.1")
+                .produces("com.github.bigeasy.string-beans/string-beans-jpa/0.1.0.1")
                 .depends()
                     .production("com.github.bigeasy.string-beans/string-beans/0.+1")
                     .production("org.hibernate/hibernate-core/3.3.1.GA")

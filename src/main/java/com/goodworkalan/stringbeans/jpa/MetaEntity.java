@@ -8,12 +8,12 @@ import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.Id;
 
+import com.goodworkalan.danger.Danger;
 import com.goodworkalan.reflective.getter.Getter;
 import com.goodworkalan.reflective.getter.Getters;
 import com.goodworkalan.stringbeans.BeanConstructor;
 import com.goodworkalan.stringbeans.MetaBean;
 import com.goodworkalan.stringbeans.MetaObject;
-import com.goodworkalan.stringbeans.StringBeanException;
 
 /**
  * A meta bean that either creates a bean, or reads it from a JPA data source,
@@ -131,7 +131,7 @@ public class MetaEntity implements BeanConstructor {
         if (id != null) {
             Object em = participants.get(ENTITY_MANAGER);
             if (em == null) {
-                throw new StringBeanException(MetaEntity.class, "entityManagerMissing");
+                throw new Danger(MetaEntity.class, "entityManagerMissing");
             }
             bean = ((EntityManager) em).find(getObjectClass(), id);
         }
