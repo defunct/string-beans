@@ -5,6 +5,8 @@ import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.Map;
 
+import com.goodworkalan.danger.Danger;
+
 /**
  * Builds an object tree by pushing elements onto and popping them from a stack
  * that represents the state of the tree during an in order traversal of of a
@@ -106,7 +108,7 @@ public class ObjectStack {
             if (ignoreMissing) {
                 return false;
             }
-            throw new StringBeanException(ObjectStack.class, "doesNotExist", type, name);
+            throw new Danger(ObjectStack.class, "doesNotExist", type, name);
         } 
         if (type == null) {
             metaObject = converter.getMetaObject(propertyType);
@@ -115,7 +117,7 @@ public class ObjectStack {
                                    ? (Class<?>) propertyType
                                    : (Class<?>) ((ParameterizedType) propertyType).getRawType();
             if (!propertyClass.isAssignableFrom(type)) {
-                throw new StringBeanException(ObjectStack.class, "pushIsNotAssignableFrom");
+                throw new Danger(ObjectStack.class, "pushIsNotAssignableFrom");
             }
             metaObject = converter.getMetaObject(type);
         }
@@ -205,7 +207,7 @@ public class ObjectStack {
         try {
             return Thread.currentThread().getContextClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {
-            throw new StringBeanException(ObjectStack.class, "forName", e);
+            throw new Danger(ObjectStack.class, "forName", e);
         }
     }
     
