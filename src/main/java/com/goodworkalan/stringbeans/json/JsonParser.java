@@ -1,11 +1,13 @@
 package com.goodworkalan.stringbeans.json;
 
-import static com.goodworkalan.stringbeans.StringBeanException._;
+import static com.goodworkalan.danger.Danger._;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.goodworkalan.danger.Danger;
 
 
 /**
@@ -177,7 +179,7 @@ public class JsonParser {
      *            The message code for the type.
      */
     private void expecting(String type) {
-        throw new IllegalArgumentException(_(JsonParser.class, "expecting", _(JsonParser.class, type), line, character));
+        throw new Danger(JsonParser.class, "expecting", _(JsonParser.class, type), line, character);
     }
 
     /**
@@ -250,7 +252,7 @@ public class JsonParser {
     private void read(String literal) {
         for (int i = 0, stop = literal.length(); i < stop; i++) {
             if (chars.charAt(index) != literal.charAt(i)) {
-                throw new IllegalArgumentException(_(JsonParser.class, "expecting", "value", line, character));
+                expecting("value");
             }
             forward();
         }
@@ -274,7 +276,7 @@ public class JsonParser {
             index++;
         }
         if (sought.indexOf(chars.charAt(index)) == -1) {
-            throw new IllegalArgumentException(_(JsonParser.class, "unexpected", _(JsonParser.class, type), line, character));
+            throw new Danger(JsonParser.class, "unexpected", _(JsonParser.class, type), line, character);
         }
     }
 
